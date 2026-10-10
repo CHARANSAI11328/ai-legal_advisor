@@ -13,6 +13,9 @@
 </head>
 <body>
 
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
   <!-- Top Navigation Header -->
   <header class="app-header">
     <div class="header-left">
@@ -133,7 +136,7 @@
       </div>
 
       <div class="file-status-box" id="step1FileStatus">
-        Ready: <strong>Master SaaS Agreement</strong> (Words: ~350 • Clauses: 5 • Jurisdiction: India Law)
+        Ready: <strong id="step1DocName">Master SaaS Agreement</strong> • <span id="step1Stats">Words: 348 • Detected Clauses: 5 • Jurisdiction: India Law</span>
       </div>
     </div>
   </section>
@@ -243,13 +246,13 @@
         </div>
 
         <div class="contract-document-wrapper">
-          <textarea id="contractText" class="contract-editor" placeholder="Contract text appears here..." oninput="updateWordCount()"></textarea>
+          <textarea id="contractText" class="contract-editor" placeholder="Paste or upload any legal contract or agreement text here to analyze..." oninput="onContractTextChanged()"></textarea>
         </div>
 
         <div class="panel-footer">
           <span id="wordCount">Words: 0</span>
-          <span id="clauseCount">Detected Clauses: 5</span>
-          <span style="color: var(--primary); font-weight: 600;" id="aiEngineStatus">Gemini 2.5 Active</span>
+          <span id="clauseCount">Detected Clauses: 0</span>
+          <span style="color: var(--primary); font-weight: 600;" id="aiEngineStatus">Legal Intelligence Active</span>
         </div>
       </section>
 

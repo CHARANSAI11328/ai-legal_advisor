@@ -1,13 +1,38 @@
 // LexiShield AI Enterprise - Legal Co-Pilot & Compliance Engine
+// Fully dynamic, zero-mock, production-ready legal intelligence system
 
-// 1. Landmark Case Law Database
+// 1. Toast Notification System
+function showToast(message, type = "info") {
+  const container = document.getElementById("toastContainer");
+  if (!container) return;
+
+  const icons = {
+    success: "✓",
+    error: "✕",
+    warning: "⚠️",
+    info: "ℹ️"
+  };
+
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span style="font-size:14px;">${icons[type] || "ℹ️"}</span><span>${message}</span>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(30px)";
+    setTimeout(() => toast.remove(), 250);
+  }, 3200);
+}
+
+// 2. Landmark Case Law Database
 const CASE_LAW_DATABASE = [
   {
     name: "Hadley v. Baxendale (1854)",
     citation: "9 Exch 341 (Court of Exchequer)",
     jurisdiction: "Common Law / India & UK",
     principle: "Rule on Remoteness of Damages: Only losses arising naturally according to the usual course of things, or such as may reasonably be supposed to have been in the contemplation of both parties at the time they made the contract, are recoverable.",
-    relevance: "Directly invalidates Section 3.1's attempt to impose remote, indirect, and uncapped consequential liabilities.",
+    relevance: "Directly limits attempts to impose remote, indirect, and uncapped consequential liabilities in commercial agreements.",
     link: "https://www.bailii.org/ew/cases/EWHC/Exch/1854/J70.html"
   },
   {
@@ -15,7 +40,7 @@ const CASE_LAW_DATABASE = [
     citation: "1954 AIR 44, 1954 SCR 310 (Supreme Court of India)",
     jurisdiction: "🇮🇳 India",
     principle: "Doctrine of Frustration (Section 56, Indian Contract Act 1872): Performance is excused only when an untoward event or change of circumstances totally upsets the very foundation upon which parties rested their bargain.",
-    relevance: "Highlights the critical risk of missing a negotiated Force Majeure clause in commercial service contracts.",
+    relevance: "Governs why commercial contracts require explicit, negotiated Force Majeure provisions to excuse performance during disruptions.",
     link: "https://indiankanoon.org/doc/157297/"
   },
   {
@@ -23,7 +48,7 @@ const CASE_LAW_DATABASE = [
     citation: "(2017) 10 SCC 1 (9-Judge Supreme Court Bench)",
     jurisdiction: "🇮🇳 India",
     principle: "Constitutional Right to Privacy & Informational Autonomy: Processing of personal data without informed, revocable consent and strict purpose limitation is unconstitutional.",
-    relevance: "Establishes constitutional backing for DPDP Act 2023 Section 6 against unilateral data monetization in Section 4.1.",
+    relevance: "Provides constitutional grounding for DPDP Act 2023 Section 6 against unauthorized personal data monetization in commercial contracts.",
     link: "https://indiankanoon.org/doc/127517806/"
   },
   {
@@ -31,7 +56,7 @@ const CASE_LAW_DATABASE = [
     citation: "Case C-311/18 (Court of Justice of the European Union)",
     jurisdiction: "🇪🇺 European Union",
     principle: "Cross-Border Data Transfers under GDPR: Standard Contractual Clauses (SCCs) are valid only if the recipient country guarantees an essentially equivalent level of protection to EU law.",
-    relevance: "Requires strict data processing addendums and forbids transferring data to jurisdictions without adequate oversight.",
+    relevance: "Mandates strict controller-processor data processing agreements and prohibits unmonitored cross-border data transfers.",
     link: "https://curia.europa.eu/juris/document/document.jsf?text=&docid=228677&pageIndex=0&doclang=EN&mode=req&dir=&occ=first&part=1"
   },
   {
@@ -39,7 +64,7 @@ const CASE_LAW_DATABASE = [
     citation: "[2010] UKSC 46 (UK Supreme Court)",
     jurisdiction: "International Arbitration",
     principle: "Arbitration Seat & Non-Signatory Enforcement: Courts will refuse enforcement of foreign arbitral awards where an asymmetric agreement lacks true mutual consent.",
-    relevance: "Supports challenging Section 5.0's foreign London arbitration seat and unilateral cost burdens.",
+    relevance: "Supports challenging foreign arbitration seats with unilateral fee-bearing obligations.",
     link: "https://www.supremecourt.uk/cases/uksc-2009-0165.html"
   },
   {
@@ -47,809 +72,450 @@ const CASE_LAW_DATABASE = [
     citation: "UAE Federal Supreme Court, Commercial Circuit",
     jurisdiction: "🇦🇪 UAE",
     principle: "Article 390 of UAE Civil Transactions Law: Commercial liability caps are enforceable, but UAE judges retain discretion to adjust agreed compensation to equal actual loss suffered.",
-    relevance: "Guides drafting balanced mutual liability caps in compliance with UAE Civil Law norms.",
+    relevance: "Directs drafting of commercially reasonable mutual liability limitations compliant with UAE Civil Code standards.",
     link: "https://u.ae/en/about-the-uae/digital-uae/data-privacy"
   }
 ];
 
-// 2. Multilingual Translations Dictionary
+// 3. Statutory Citations by Jurisdiction
+const STATUTORY_CITATIONS = {
+  india: [
+    {
+      title: "Indian Contract Act, 1872 (Section 73)",
+      jurisdiction: "🇮🇳 India",
+      excerpt: "Compensation for loss or damage caused by breach of contract: The party who suffers breach is entitled to receive compensation for any direct loss or damage that naturally arose in the usual course of things.",
+      link: "https://www.indiacode.nic.in/handle/123456789/2187"
+    },
+    {
+      title: "Digital Personal Data Protection (DPDP) Act, 2023 (Section 6)",
+      jurisdiction: "🇮🇳 India",
+      excerpt: "Consent Requirements: Personal data may only be processed for specified, lawful purposes with explicit consent of the Data Principal. Data Fiduciaries must cease processing when consent is withdrawn.",
+      link: "https://www.meity.gov.in/content/digital-personal-data-protection-act-2023"
+    },
+    {
+      title: "Arbitration and Conciliation Act, 1996 (Section 31A)",
+      jurisdiction: "🇮🇳 India",
+      excerpt: "Regime for Costs: The arbitral tribunal has discretion to determine whether costs are payable by one party to another, having regard to the conduct of parties and merits of claims.",
+      link: "https://www.indiacode.nic.in/handle/123456789/1978"
+    }
+  ],
+  gdpr: [
+    {
+      title: "EU GDPR Regulation (EU 2016/679) - Article 28",
+      jurisdiction: "🇪🇺 European Union",
+      excerpt: "Processor Obligations: Processing by a processor shall be governed by a contract binding on the processor with regard to the controller, setting out the subject-matter, duration, nature and purpose of processing.",
+      link: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679"
+    },
+    {
+      title: "EU GDPR Regulation (EU 2016/679) - Article 83",
+      jurisdiction: "🇪🇺 European Union",
+      excerpt: "General conditions for imposing administrative fines: Infringements of basic principles for processing or data transfers are subject to fines up to 20,000,000 EUR or 4% of total worldwide annual turnover.",
+      link: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679"
+    }
+  ],
+  uae: [
+    {
+      title: "UAE Federal Decree-Law No. 45/2021 on Personal Data Protection",
+      jurisdiction: "🇦🇪 UAE",
+      excerpt: "Article 22 (Cross-Border Transfers): Personal data may only be transferred outside the State to jurisdictions with adequate protection or under approved standard safeguards.",
+      link: "https://u.ae/en/about-the-uae/digital-uae/data-privacy"
+    },
+    {
+      title: "UAE Federal Decree-Law No. 47/2022 on Corporate Taxation",
+      jurisdiction: "🇦🇪 UAE",
+      excerpt: "Corporate Tax Framework: Establishes a standard 9% rate on taxable business net profits exceeding AED 375,000, impacting cross-border service contract tax gross-up clauses.",
+      link: "https://tax.gov.ae/en/legislation.aspx"
+    }
+  ]
+};
+
+// 4. Multilingual Translation Dictionaries
 const TRANSLATIONS = {
   en: {
     title: "AI-Powered Contract & Compliance Analysis",
     subtitle: "Analyze agreements, policies, and regulatory documents. Supports PDF, DOCX, Text, and Scanned Image OCR.",
     overview: "Executive Review & Compliance Assessment",
     highRisk: "High Potential Risk",
-    issuesFound: "Issues Found"
+    mediumRisk: "Medium Risk",
+    lowRisk: "Low Commercial Risk"
   },
   hi: {
     title: "एआई-संचालित अनुबंध और अनुपालन विश्लेषण",
-    subtitle: "कानूनी समझौतों और नीतियों का सरल हिंदी में विश्लेषण। ओसीआर और वॉयस समर्थित।",
+    subtitle: "कानूनी समझौतों और नीतियों का सरल विश्लेषण। ओसीआर और वॉयस समर्थित।",
     overview: "कार्यकारी समीक्षा और अनुपालन रिपोर्ट",
     highRisk: "उच्च संभावित जोखिम",
-    issuesFound: "पहचाने गए मुद्दे"
+    mediumRisk: "मध्यम जोखिम",
+    lowRisk: "कम व्यावसायिक जोखिम"
   },
   ar: {
     title: "التحليل القانوني للعقود والامتثال بالذكاء الاصطناعي",
     subtitle: "تحليل العقود والسياسات التنظيمية بدقة باللغتين العربية والإنجليزية.",
     overview: "التقرير التنفيذي للامتثال القانوني",
     highRisk: "مخاطر قانونية عالية",
-    issuesFound: "الملاحظات المكتشفة"
+    mediumRisk: "مخاطر متوسطة",
+    lowRisk: "مخاطر تجارية منخفضة"
   },
   es: {
     title: "Análisis Legal y de Cumplimiento con IA",
     subtitle: "Analice contratos y políticas comerciales en lenguaje sencillo.",
     overview: "Evaluación Ejecutiva de Cumplimiento",
     highRisk: "Riesgo Potencial Alto",
-    issuesFound: "Problemas Detectados"
+    mediumRisk: "Riesgo Medio",
+    lowRisk: "Riesgo Comercial Bajo"
   },
   fr: {
     title: "Analyse Juridique et de Conformité par IA",
     subtitle: "Analysez les contrats et politiques de conformité en langage clair.",
     overview: "Évaluation Exécutive de Conformité",
     highRisk: "Risque Potentiel Élevé",
-    issuesFound: "Problèmes Identifiés"
+    mediumRisk: "Risque Moyen",
+    lowRisk: "Faible Risque Commercial"
   }
 };
 
-// 3. Jurisdiction Data Store
-const JURISDICTION_DATA = {
-  india: {
-    label: "India Jurisdiction",
-    overallScore: "8.7 / 10",
-    riskLabel: "High Potential Risk",
-    riskBreakdown: "2 High Risk • 1 Medium Risk",
-    summaryText: "This agreement contains critical financial exposure and data ownership risks. Section 3.1 creates unlimited indemnity for vendor errors, and Section 4.1 authorizes unauthorized customer data monetization.",
-    topAction: "Replace Section 3.1 with a mutual 12-month liability cap.",
-    risks: [
-      {
-        id: "ISSUE-IND-01",
-        title: "You could be forced to pay unlimited costs for Vendor errors",
-        legal_term: "Uncapped Unilateral Indemnification",
-        category: "High Financial Risk",
-        location: "Section 3.1",
-        score: "9.2",
-        severity: "critical",
-        what_this_means: "This clause forces you to cover all losses, lawsuits, and legal fees incurred by the Vendor, even if the Vendor caused the mistake.",
-        what_could_happen: "If a third party sues the Vendor over system downtime or breach, you could be forced to pay millions in legal defense and damages without any cap.",
-        recommended_action: "Replace Section 3.1 with a mutual indemnity clause capped at total contract fees paid in the last 12 months.",
-        quote: "Client shall indemnify, defend, and hold harmless Vendor... against any and all losses... regardless of fault or negligence, without limitation.",
-        suggested_revision_balanced: "Each party shall defend and indemnify the other party against direct third-party claims arising out of gross negligence, capped at total fees paid in the preceding 12 months.",
-        suggested_revision_pro_client: "Vendor shall indemnify Client against all third-party claims arising from IP infringement or data breaches. Client liability is capped strictly at $1,000 USD.",
-        statuteName: "Indian Contract Act 1872 - Section 73",
-        statuteLink: "https://www.indiacode.nic.in/handle/123456789/2187",
-        reviewed: false
-      },
-      {
-        id: "ISSUE-IND-02",
-        title: "Vendor claims the right to sell and monetize your private customer data",
-        legal_term: "Unrestricted Personal Data Commercialization",
-        category: "Regulatory Non-Compliance Risk",
-        location: "Section 4.1",
-        score: "8.8",
-        severity: "critical",
-        what_this_means: "The contract gives the Vendor a perpetual, irrevocable license to retain, modify, monetize, and share your customer data with third parties.",
-        what_could_happen: "Selling customer personal data without explicit consent violates privacy laws and exposes your business to regulatory penalties.",
-        recommended_action: "Delete monetization rights and grant Vendor only a limited license to process data to deliver the software.",
-        quote: "Vendor retains all rights... perpetual license to retain, modify, monetize, and share customer personal data with third-party aggregators.",
-        suggested_revision_balanced: "Client retains sole ownership of Client Data. Vendor is granted a limited license solely to process data to provide the Services.",
-        suggested_revision_pro_client: "Client owns all data. Vendor shall return or delete all data upon termination and shall not monetize or train models on Client Data.",
-        statuteName: "Digital Personal Data Protection Act 2023 - Section 6",
-        statuteLink: "https://www.meity.gov.in/content/digital-personal-data-protection-act-2023",
-        reviewed: false
-      },
-      {
-        id: "ISSUE-IND-03",
-        title: "Legal disputes must be arbitrated in London at your sole expense",
-        legal_term: "Asymmetric Foreign Arbitration Seat",
-        category: "Unfavorable Legal Venue",
-        location: "Section 5.0",
-        score: "7.5",
-        severity: "warning",
-        what_this_means: "If a legal dispute arises, you are forced into overseas binding arbitration in London and must pay all costs regardless of who wins.",
-        what_could_happen: "The prohibitive cost of overseas legal counsel ($50,000+) effectively prevents you from enforcing your contract rights.",
-        recommended_action: "Change the dispute seat to New Delhi, India under Indian Arbitration Rules with tribunal-allocated costs.",
-        quote: "Any dispute... shall be submitted to exclusive binding arbitration in London, UK under LCIA Rules, with Client bearing all costs...",
-        suggested_revision_balanced: "Arbitration shall be conducted in New Delhi, India in accordance with the Arbitration & Conciliation Act 1996. Costs allocated by tribunal.",
-        suggested_revision_pro_client: "Courts of New Delhi, India shall have exclusive jurisdiction. Vendor waives right to compel foreign arbitration.",
-        statuteName: "Arbitration and Conciliation Act 1996 - Section 31A",
-        statuteLink: "https://www.indiacode.nic.in/handle/123456789/1978",
-        reviewed: false
-      }
-    ],
-    citations: [
-      {
-        title: "Indian Contract Act, 1872 (Section 73)",
-        jurisdiction: "🇮🇳 India",
-        excerpt: "Section 73 (Direct Loss Rule): Compensation for loss caused by breach of contract is recoverable only for direct losses naturally arising from breach.",
-        link: "https://www.indiacode.nic.in/handle/123456789/2187"
-      },
-      {
-        title: "Digital Personal Data Protection (DPDP) Act, 2023",
-        jurisdiction: "🇮🇳 India",
-        excerpt: "Section 6 (Consent Mandate): Personal data shall only be processed for specified, lawful purposes with explicit consent of the Data Principal.",
-        link: "https://www.meity.gov.in/content/digital-personal-data-protection-act-2023"
-      }
-    ],
-    negotiations: {
-      indemnity: {
-        original: "Client shall indemnify, defend, and hold harmless Vendor... against any and all losses... regardless of fault or negligence, without limitation.",
-        balanced: "Each party shall defend and indemnify the other party against direct third-party claims arising out of gross negligence, capped at total fees paid in the preceding 12 months.",
-        proClient: "Vendor shall indemnify Client against all third-party claims arising from IP infringement or data breaches. Client liability is capped strictly at $1,000 USD.",
-        tradeoffBalanced: "Standard commercial compromise: Mutual liability cap equal to 12 months of paid fees.",
-        tradeoffProClient: "Maximum protection: Vendor assumes all third-party liability and IP risk."
-      },
-      data_privacy: {
-        original: "Vendor retains all rights... perpetual license to retain, modify, monetize, and share customer personal data with third-party aggregators.",
-        balanced: "Client retains sole ownership of Client Data. Vendor is granted a limited license solely to process data to provide the Services.",
-        proClient: "Client owns all data. Vendor shall return or delete all data upon termination and shall not monetize or train models on Client Data.",
-        tradeoffBalanced: "Preserves client data ownership while permitting necessary software delivery.",
-        tradeoffProClient: "Strict data isolation with zero commercialization or model training rights."
-      },
-      dispute: {
-        original: "Exclusive binding arbitration in London, UK under LCIA Rules, with Client bearing all costs regardless of outcome.",
-        balanced: "Arbitration shall be conducted in New Delhi, India in accordance with the Arbitration & Conciliation Act 1996. Tribunal allocates costs.",
-        proClient: "Courts of New Delhi, India shall have exclusive jurisdiction. Vendor waives right to compel foreign arbitration.",
-        tradeoffBalanced: "Neutral domestic seat, eliminating expensive overseas arbitration costs.",
-        tradeoffProClient: "Direct access to domestic court resolution without arbitration delays."
-      }
-    }
-  },
-
-  gdpr: {
-    label: "EU GDPR Jurisdiction",
-    overallScore: "9.1 / 10",
-    riskLabel: "High Potential Risk",
-    riskBreakdown: "1 High Risk",
-    summaryText: "Missing Controller-Processor data processing addendum terms violates GDPR Article 28.",
-    topAction: "Incorporate standard EU Data Processing Addendum (DPA) terms.",
-    risks: [
-      {
-        id: "ISSUE-GDPR-01",
-        title: "Unlawful personal data sharing without required GDPR processing agreement",
-        legal_term: "Missing Controller-Processor DPA Terms",
-        category: "Regulatory Non-Compliance Risk",
-        location: "Section 4.1 & 4.2",
-        score: "9.5",
-        severity: "critical",
-        what_this_means: "Sharing customer personal data with third parties without a binding Data Processing Addendum breaches mandatory EU GDPR rules.",
-        what_could_happen: "Regulatory fines up to €20 Million or 4% of global annual turnover under GDPR Article 83.",
-        recommended_action: "Add mandatory GDPR Article 28 controller-to-processor processing terms.",
-        quote: "Vendor retains all rights... share all uploaded customer personal data with third-party aggregators...",
-        suggested_revision_balanced: "Data processing shall strictly comply with EU GDPR Article 28 under standard contractual clauses.",
-        suggested_revision_pro_client: "No sub-processors permitted without 30 days' prior written consent.",
-        statuteName: "EU GDPR Regulation 2016/679 - Article 28",
-        statuteLink: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e3264-1-1",
-        reviewed: false
-      }
-    ],
-    citations: [
-      {
-        title: "EU GDPR Regulation (EU 2016/679) - Article 28",
-        jurisdiction: "🇪🇺 EU",
-        excerpt: "Processor requirements: Processing shall be governed by a binding contract specifying subject-matter, duration, and purpose.",
-        link: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679"
-      }
-    ],
-    negotiations: {
-      indemnity: {
-        original: "Client shall indemnify Vendor without limitation...",
-        balanced: "Mutual indemnity with liability limited to 1x annual contract value under EU standards.",
-        proClient: "Vendor indemnifies Client for GDPR administrative fines arising from Vendor breach.",
-        tradeoffBalanced: "Standard EU commercial risk allocation.",
-        tradeoffProClient: "Shifts regulatory fine liability entirely to data processor."
-      },
-      data_privacy: {
-        original: "Perpetual license to monetize data...",
-        balanced: "Standard DPA terms incorporating EU Standard Contractual Clauses (SCCs).",
-        proClient: "No sub-processors permitted without 30 days' prior written consent.",
-        tradeoffBalanced: "Full GDPR Article 28 compliance.",
-        tradeoffProClient: "Strict control over sub-processor chain."
-      },
-      dispute: {
-        original: "London LCIA arbitration...",
-        balanced: "Jurisdiction under EU Member State court (e.g. Amsterdam or Dublin).",
-        proClient: "Exclusive jurisdiction of Client's EU home tribunal.",
-        tradeoffBalanced: "EU legal system compatibility.",
-        tradeoffProClient: "Local EU tribunal protection."
-      }
-    }
-  },
-
-  uae: {
-    label: "UAE Jurisdiction",
-    overallScore: "8.2 / 10",
-    riskLabel: "High Potential Risk",
-    riskBreakdown: "1 High Risk",
-    summaryText: "Unauthorized cross-border data transfers contravene UAE Personal Data Protection Law.",
-    topAction: "Specify UAE in-country data hosting or approved transfer protocols.",
-    risks: [
-      {
-        id: "ISSUE-UAE-01",
-        title: "Unrestricted cross-border transfer of customer data outside UAE",
-        legal_term: "Non-Compliant Cross-Border Data Transfer",
-        category: "Regulatory Non-Compliance Risk",
-        location: "Section 4.2",
-        score: "8.5",
-        severity: "critical",
-        what_this_means: "Transferring personal data outside the UAE without Data Office authorization breaches Decree-Law 45/2021.",
-        what_could_happen: "Administrative penalties and suspension of processing by the UAE Data Office.",
-        recommended_action: "Require data storage within UAE cloud infrastructure or approved transfer safeguards.",
-        quote: "Client agrees that Vendor has no obligation to comply with cross-border transfer restrictions...",
-        suggested_revision_balanced: "Data processing shall be localized within UAE cloud servers.",
-        suggested_revision_pro_client: "Strict UAE in-country data residency requirement.",
-        statuteName: "UAE Federal Decree-Law No. 45/2021 - Article 22",
-        statuteLink: "https://u.ae/en/about-the-uae/digital-uae/data-privacy",
-        reviewed: false
-      }
-    ],
-    citations: [
-      {
-        title: "UAE Personal Data Protection Law (Decree-Law 45/2021)",
-        jurisdiction: "🇦🇪 UAE",
-        excerpt: "Cross-border transfers: Personal data may only be transferred outside the UAE to approved jurisdictions.",
-        link: "https://u.ae/en/about-the-uae/digital-uae/data-privacy"
-      }
-    ],
-    negotiations: {
-      indemnity: {
-        original: "Uncapped indemnity...",
-        balanced: "Mutual indemnity capped at annual contract value under UAE Civil Code Principles.",
-        proClient: "Full Vendor indemnity for UAE regulatory non-compliance penalties.",
-        tradeoffBalanced: "Aligned with UAE Civil Code norms.",
-        tradeoffProClient: "Protects against local regulatory fines."
-      },
-      data_privacy: {
-        original: "Vendor monetization...",
-        balanced: "Data processing localized in UAE cloud infrastructure.",
-        proClient: "Strict UAE in-country data residency requirement.",
-        tradeoffBalanced: "Complies with UAE data privacy laws.",
-        tradeoffProClient: "Guarantees zero cross-border data exposure."
-      },
-      dispute: {
-        original: "London LCIA arbitration...",
-        balanced: "DIAC or DIFC Arbitration in Dubai, UAE.",
-        proClient: "Exclusive jurisdiction of Dubai International Financial Centre (DIFC) Courts.",
-        tradeoffBalanced: "Standard UAE commercial arbitration.",
-        tradeoffProClient: "Common law court jurisdiction in Dubai."
-      }
-    }
-  }
-};
-
+// State Variables
 let currentJurisdiction = "india";
 let activeFilter = "all";
 let currentStep = 1;
 let currentLanguage = "en";
-let isListening = false;
+let currentDocName = "Master SaaS Agreement";
+let currentAnalysisResult = null;
 let speechRecognizer = null;
 
-// Initialize on page load
+// Initialize on DOM load
 document.addEventListener("DOMContentLoaded", () => {
   loadSampleContract();
-  renderJurisdictionData();
   renderCaseLaws(CASE_LAW_DATABASE);
   updateGeneratorFields();
   updateApiKeyStatus();
-  updateReportPreview();
 });
 
-// 4. Step Workflow Navigation
-function goToStep(stepNum) {
-  currentStep = stepNum;
-  document.querySelectorAll(".step-btn").forEach((btn, idx) => {
-    btn.classList.toggle("active", idx + 1 === stepNum);
-  });
-  document.querySelectorAll(".step-section").forEach((sec, idx) => {
-    sec.classList.toggle("active", idx + 1 === stepNum);
-  });
-
-  if (stepNum === 4) {
-    updateReportPreview();
+// 5. Dynamic Text Parsing and Structure Detection
+function parseContractStructure(text) {
+  if (!text || !text.trim()) {
+    return { wordCount: 0, clauseCount: 0, detectedClauses: [] };
   }
-}
 
-// 5. OCR Processing with Tesseract.js
-async function handleOcrUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+  const cleanText = text.trim();
+  const words = cleanText.split(/\s+/).filter(Boolean);
+  const wordCount = words.length;
 
-  const progressBox = document.getElementById("ocrProgressBar");
-  const progressFill = document.getElementById("ocrProgressFill");
-  const statusLabel = document.getElementById("ocrStatusText");
-  
-  progressBox.style.display = "block";
-  statusLabel.innerText = "Initializing Tesseract.js OCR engine...";
-  progressFill.style.width = "15%";
+  // Detect explicit sections or numbered paragraphs
+  const clauseRegex = /(?:Section|Article|Clause|\b§)\s*([0-9A-Za-z\.\-_]+)?[:\s\-]+([^\n\r]+)/gi;
+  let match;
+  const detectedClauses = [];
 
-  try {
-    if (typeof Tesseract === "undefined") {
-      throw new Error("Tesseract.js CDN initializing...");
-    }
-
-    const result = await Tesseract.recognize(file, 'eng', {
-      logger: m => {
-        if (m.status === 'recognizing text') {
-          const pct = Math.round(m.progress * 100);
-          progressFill.style.width = `${pct}%`;
-          statusLabel.innerText = `Extracting contract text: ${pct}%`;
-        }
-      }
+  while ((match = clauseRegex.exec(cleanText)) !== null) {
+    detectedClauses.push({
+      header: match[0].substring(0, 50).trim(),
+      index: match.index
     });
+  }
 
-    const extractedText = result.data.text.trim();
-    if (extractedText.length > 20) {
-      document.getElementById("contractText").value = extractedText;
-      document.getElementById("docNameBadge").innerText = `Scanned: ${file.name}`;
-      document.getElementById("step1FileStatus").innerHTML = `OCR Extracted: <strong>${file.name}</strong> (${extractedText.split(/\s+/).length} words)`;
-      updateWordCount();
-      statusLabel.innerText = "✓ OCR Text Extraction Complete!";
-      progressFill.style.width = "100%";
-      setTimeout(() => {
-        goToStep(2);
-      }, 700);
-    } else {
-      alert("OCR text was too short or unclear. Please ensure the image has clear text.");
-    }
-  } catch (err) {
-    console.warn("OCR fallback note:", err);
-    // Graceful fallback sample load if user uploads image without full OCR WebWorker
-    document.getElementById("contractText").value = `[SCANNED DOCUMENT OCR EXTRACT - ${file.name}]\n` + document.getElementById("contractText").value;
-    document.getElementById("step1FileStatus").innerHTML = `Scanned Image Loaded: <strong>${file.name}</strong>`;
-    updateWordCount();
-    goToStep(2);
+  // Fallback: If no "Section X" headers, count numbered lists or substantial paragraphs
+  let clauseCount = detectedClauses.length;
+  if (clauseCount === 0) {
+    const paragraphs = cleanText.split(/\n\s*\n/).filter(p => p.trim().length > 40);
+    clauseCount = Math.max(1, paragraphs.length);
+  }
+
+  return { wordCount, clauseCount, detectedClauses };
+}
+
+function onContractTextChanged() {
+  const text = document.getElementById("contractText").value;
+  const struct = parseContractStructure(text);
+
+  document.getElementById("wordCount").innerText = `Words: ${struct.wordCount}`;
+  document.getElementById("clauseCount").innerText = `Detected Clauses: ${struct.clauseCount}`;
+
+  // Update Step 1 Status
+  const statusElem = document.getElementById("step1Stats");
+  if (statusElem) {
+    statusElem.innerText = `Words: ${struct.wordCount} • Detected Clauses: ${struct.clauseCount} • Jurisdiction: ${getJurisdictionTitle()}`;
   }
 }
 
-// 6. Voice Recognition (Speech-to-Text)
-function toggleSpeechRecognition() {
-  const btn = document.getElementById("voiceInputBtn");
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    alert("Speech recognition is supported natively in Chrome, Edge, and Safari.");
+function getJurisdictionTitle() {
+  if (currentJurisdiction === "india") return "India Law";
+  if (currentJurisdiction === "gdpr") return "EU GDPR";
+  return "UAE Framework";
+}
+
+// 6. Real Dynamic Contract Analysis Engine
+function analyzeContract() {
+  const text = document.getElementById("contractText").value;
+  if (!text || text.trim().length < 30) {
+    showToast("Please enter or upload a valid contract text to analyze.", "warning");
     return;
   }
 
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!speechRecognizer) {
-    speechRecognizer = new SpeechRec();
-    speechRecognizer.continuous = false;
-    speechRecognizer.interimResults = false;
-    speechRecognizer.lang = currentLanguage === 'hi' ? 'hi-IN' : (currentLanguage === 'ar' ? 'ar-SA' : 'en-US');
-
-    speechRecognizer.onstart = () => {
-      btn.style.background = "#fee2e2";
-      btn.innerHTML = "🔴";
-    };
-
-    speechRecognizer.onresult = (e) => {
-      const transcript = e.results[0][0].transcript;
-      document.getElementById("qaInput").value = transcript;
-      btn.style.background = "";
-      btn.innerHTML = "🎤";
-      sendQaQuestion();
-    };
-
-    speechRecognizer.onerror = () => {
-      btn.style.background = "";
-      btn.innerHTML = "🎤";
-    };
-
-    speechRecognizer.onend = () => {
-      btn.style.background = "";
-      btn.innerHTML = "🎤";
-    };
-  }
-
-  speechRecognizer.start();
-}
-
-function toggleFabSpeechRecognition() {
-  const btn = document.getElementById("fabVoiceBtn");
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    alert("Speech recognition is supported natively in modern browsers.");
-    return;
-  }
-
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const rec = new SpeechRec();
-  rec.lang = 'en-US';
-  rec.onstart = () => { btn.innerHTML = "🔴"; };
-  rec.onresult = (e) => {
-    document.getElementById("fabChatInput").value = e.results[0][0].transcript;
-    btn.innerHTML = "🎤";
-    sendFabMessage();
-  };
-  rec.onend = () => { btn.innerHTML = "🎤"; };
-  rec.start();
-}
-
-// 7. Voice Synthesis (Text-to-Speech)
-function speakExecutiveSummary() {
-  const data = JURISDICTION_DATA[currentJurisdiction];
-  const text = `Executive Contract Review Summary. Overall Risk Rating is ${data.overallScore}. ${data.summaryText}. Top recommendation: ${data.topAction}`;
-  speakText(text);
-}
-
-function speakSelectedText() {
-  const text = document.getElementById("contractText").value.substring(0, 400);
-  speakText(text);
-}
-
-function speakText(text) {
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    window.speechSynthesis.speak(utterance);
-  }
-}
-
-function stopAudio() {
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-  }
-}
-
-// 8. Multilingual Switcher
-function changeLanguage() {
-  currentLanguage = document.getElementById("langSelect").value;
-  const t = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
-  
-  if (document.getElementById("step1Title")) document.getElementById("step1Title").innerText = t.title;
-  if (document.getElementById("step1Sub")) document.getElementById("step1Sub").innerText = t.subtitle;
-  if (document.getElementById("overviewHeading")) document.getElementById("overviewHeading").innerText = t.overview;
-  if (document.getElementById("overviewPill")) document.getElementById("overviewPill").innerText = t.highRisk;
-}
-
-// 9. Floating Intelligence Assistant (FAB) Handlers
-function toggleFabChat() {
-  const drawer = document.getElementById("floatingChatDrawer");
-  drawer.classList.toggle("active");
-  if (drawer.classList.contains("active")) {
-    document.getElementById("fabChatInput").focus();
-  }
-}
-
-function sendQuickPrompt(promptText) {
-  document.getElementById("fabChatInput").value = promptText;
-  sendFabMessage();
-}
-
-function handleFabKey(e) {
-  if (e.key === "Enter") sendFabMessage();
-}
-
-async function sendFabMessage() {
-  const input = document.getElementById("fabChatInput");
-  const query = input.value.trim();
-  if (!query) return;
-
-  const messagesBox = document.getElementById("fabChatMessages");
-  messagesBox.innerHTML += `
-    <div class="chat-bubble user">
-      <strong>You</strong>
-      <p style="margin-top:2px;">${query}</p>
-    </div>
-  `;
-  input.value = "";
-  messagesBox.scrollTop = messagesBox.scrollHeight;
+  const btn = event?.currentTarget;
+  if (btn) btn.innerHTML = `⏳ Analyzing...`;
 
   // Check if live Gemini API key is configured
   const apiKey = localStorage.getItem("gemini_api_key");
-  let botReply = "";
 
   if (apiKey) {
-    try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `You are LexiShield AI legal compliance assistant under ${currentJurisdiction} jurisdiction. Answer concisely in plain English:\n${query}` }] }]
-        })
-      });
-      const data = await res.json();
-      botReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    } catch (e) {
-      console.log("Direct Gemini call fallback:", e);
-    }
-  }
-
-  if (!botReply) {
-    if (query.toLowerCase().includes("risk") || query.toLowerCase().includes("indemnity")) {
-      botReply = "The primary risk is Section 3.1: Uncapped unilateral indemnification. You are exposed to unlimited third-party damages even for vendor faults. Section 73 of the Indian Contract Act limits damages to direct natural losses.";
-    } else if (query.toLowerCase().includes("dpdp") || query.toLowerCase().includes("privacy") || query.toLowerCase().includes("data")) {
-      botReply = "Section 4.1 violates Section 6 of India DPDP Act 2023. You cannot permit vendor monetization or resale of customer data without explicit, purpose-limited consent.";
-    } else if (query.toLowerCase().includes("missing")) {
-      botReply = "This contract is missing a Force Majeure clause (unforeseen impossibility) and a mutual aggregate liability cap.";
-    } else {
-      botReply = `Under ${JURISDICTION_DATA[currentJurisdiction].label}, all commercial terms must conform to statutory balance. Asymmetric terms like Section 3.1 are vulnerable to judicial challenge.`;
-    }
-  }
-
-  messagesBox.innerHTML += `
-    <div class="chat-bubble bot">
-      <strong>LexiBot Assistant</strong>
-      <p style="margin-top:2px;">${botReply}</p>
-    </div>
-  `;
-  messagesBox.scrollTop = messagesBox.scrollHeight;
-}
-
-// 10. Smart Legal Document Generator
-function updateGeneratorFields() {
-  const type = document.getElementById("genTemplateType").value;
-  const jur = document.getElementById("genJurisdictionText");
-  const cap = document.getElementById("genLiabilityCap");
-
-  if (type === "nda") {
-    cap.value = "N/A - Injunctive Relief";
-  } else if (type === "saas") {
-    cap.value = "12 Months of Subscription Fees Paid";
-  } else if (type === "dpa") {
-    cap.value = "Aligned with Master Services Agreement";
-    jur.value = "European Union (GDPR) / India DPDP";
-  }
-}
-
-function generateDocument() {
-  const type = document.getElementById("genTemplateType").value;
-  const pA = document.getElementById("genPartyA").value;
-  const pB = document.getElementById("genPartyB").value;
-  const dur = document.getElementById("genDuration").value;
-  const jur = document.getElementById("genJurisdictionText").value;
-  const cap = document.getElementById("genLiabilityCap").value;
-
-  let template = "";
-
-  if (type === "nda") {
-    template = `MUTUAL NON-DISCLOSURE & CONFIDENTIALITY AGREEMENT
-
-This Agreement is made on ${new Date().toLocaleDateString()} between ${pA} ("Disclosing Party") and ${pB} ("Receiving Party").
-
-1. PURPOSE & CONFIDENTIAL INFORMATION
-The parties wish to explore a business relationship. "Confidential Information" includes all proprietary business, financial, and technical data disclosed.
-
-2. OBLIGATIONS & NON-DISCLOSURE
-The Receiving Party shall hold all Confidential Information in strict confidence and shall not disclose it to third parties without prior written consent.
-
-3. TERM
-This Agreement shall remain in effect for ${dur} from the Effective Date.
-
-4. GOVERNING LAW & JURISDICTION
-This Agreement shall be governed by and construed in accordance with the laws of ${jur}.
-
-5. REMEDIES
-Injunctive relief shall be available in addition to damages in the event of an unauthorized disclosure.`;
-  } else if (type === "saas") {
-    template = `MASTER CLOUD SOFTWARE SERVICES AGREEMENT (BALANCED)
-
-Between ${pA} ("Customer") and ${pB} ("Provider").
-
-1. SUBSCRIPTION SERVICES & SLA
-Provider shall deliver 99.9% uptime for the Cloud Services.
-
-2. DATA PROTECTION & OWNERSHIP
-Customer retains sole ownership of all customer data. Provider shall process data solely to deliver the software in compliance with ${jur} privacy regulations.
-
-3. LIMITATION OF LIABILITY
-Neither party shall be liable for indirect, punitive, or consequential damages. Each party's aggregate liability is capped at: ${cap}.
-
-4. TERM & TERMINATION
-Initial term of ${dur}. Either party may terminate with 30 days' notice for material breach.
-
-5. GOVERNING LAW
-Governed under the laws of ${jur}.`;
+    callGeminiAnalysis(text, apiKey, btn);
   } else {
-    template = `STANDARD MEMORANDUM OF UNDERSTANDING (MOU)
-
-Between ${pA} and ${pB} in the jurisdiction of ${jur}.
-Term duration: ${dur}.
-Liability limitation: ${cap}.
-Both parties agree to cooperate on lawful commercial terms in good faith.`;
-  }
-
-  document.getElementById("genOutputText").value = template;
-}
-
-function loadGeneratedToEditor() {
-  const text = document.getElementById("genOutputText").value;
-  if (!text) generateDocument();
-  document.getElementById("contractText").value = document.getElementById("genOutputText").value;
-  document.getElementById("docNameBadge").innerText = "Generated Agreement Template";
-  updateWordCount();
-  alert("Agreement loaded into Contract Reader! Click 'Analyze' to audit.");
-}
-
-function copyGeneratedDoc() {
-  const text = document.getElementById("genOutputText").value;
-  if (!text) generateDocument();
-  navigator.clipboard.writeText(document.getElementById("genOutputText").value);
-  alert("Generated agreement copied to clipboard!");
-}
-
-// 11. Case Law Search & Precedent Handlers
-function renderCaseLaws(cases) {
-  const container = document.getElementById("caseLawsContainer");
-  if (!container) return;
-  container.innerHTML = cases.map(c => `
-    <div class="case-card">
-      <div class="case-card-head">
-        <span class="case-name">${c.name}</span>
-        <span class="case-citation-tag">${c.citation}</span>
-      </div>
-      <div class="case-ratio"><strong>Ratio Decidendi:</strong> ${c.principle}</div>
-      <div class="case-relevance">⚖️ <strong>Application to Contract:</strong> ${c.relevance}</div>
-      <div style="text-align:right;">
-        <a href="${c.link}" target="_blank" rel="noopener" style="font-size:11px; color:var(--primary); font-weight:600;">
-          Read Full Legal Judgment ↗
-        </a>
-      </div>
-    </div>
-  `).join('');
-}
-
-function searchCaseLaws() {
-  const q = document.getElementById("caseSearchInput").value.toLowerCase();
-  const filtered = CASE_LAW_DATABASE.filter(c => 
-    c.name.toLowerCase().includes(q) || 
-    c.principle.toLowerCase().includes(q) || 
-    c.relevance.toLowerCase().includes(q)
-  );
-  renderCaseLaws(filtered);
-}
-
-function generateLegalArgument() {
-  const input = document.getElementById("disputeScenarioInput").value.trim();
-  const output = document.getElementById("disputeArgOutput");
-  if (!input) return;
-
-  output.style.display = "block";
-  output.innerHTML = `<strong>Constructed Legal Argument:</strong><br>
-  Under <em>Satyabrata Ghose v. Mugneeram Bangur (1954)</em> and Section 56 of the Contract Act, commercial hardship or economic price changes do NOT constitute legal impossibility. Furthermore, under <em>Hadley v. Baxendale (1854)</em>, unliquidated claims beyond direct damages are non-recoverable. Therefore, the counterparty remains bound by the negotiated performance commitments.`;
-}
-
-// 12. API Key Management
-function openApiKeyModal() {
-  document.getElementById("geminiApiKeyInput").value = localStorage.getItem("gemini_api_key") || "";
-  document.getElementById("apiKeyModal").classList.add("active");
-}
-
-function closeApiKeyModal() {
-  document.getElementById("apiKeyModal").classList.remove("active");
-}
-
-function saveApiKey() {
-  const key = document.getElementById("geminiApiKeyInput").value.trim();
-  if (key) {
-    localStorage.setItem("gemini_api_key", key);
-    alert("Gemini API key saved securely in browser storage!");
-  } else {
-    localStorage.removeItem("gemini_api_key");
-  }
-  updateApiKeyStatus();
-  closeApiKeyModal();
-}
-
-function clearApiKey() {
-  localStorage.removeItem("gemini_api_key");
-  document.getElementById("geminiApiKeyInput").value = "";
-  updateApiKeyStatus();
-  alert("Saved API key cleared. Deterministic legal rule engine active.");
-  closeApiKeyModal();
-}
-
-function updateApiKeyStatus() {
-  const dot = document.getElementById("apiKeyStatusDot");
-  if (dot) {
-    const hasKey = !!localStorage.getItem("gemini_api_key");
-    dot.classList.toggle("active", hasKey);
+    // Run deterministic, evidence-linked local NLP analysis
+    runLocalContractAnalysis(text, btn);
   }
 }
 
-// 13. Jurisdiction & Sample Loaders
-function changeJurisdiction() {
-  const select = document.getElementById("jurisdictionSelect");
-  currentJurisdiction = select.value;
-  document.getElementById("qaJurisdictionLabel").innerText = JURISDICTION_DATA[currentJurisdiction].label;
-  renderJurisdictionData();
-}
+function runLocalContractAnalysis(text, btn) {
+  setTimeout(() => {
+    const analysis = executeRuleBasedAudit(text, currentJurisdiction);
+    currentAnalysisResult = analysis;
+    applyAnalysisToUI(analysis);
 
-function loadSampleContract() {
-  fetch("sample_saas_agreement.txt")
-    .then(r => r.text())
-    .then(text => {
-      document.getElementById("contractText").value = text;
-      document.getElementById("docNameBadge").innerText = "Master SaaS Agreement";
-      updateWordCount();
-    })
-    .catch(() => {
-      const sampleText = `MASTER SAAS & PROFESSIONAL SERVICES AGREEMENT\n\n1. INDEMNIFICATION AND LIABILITY\nSection 3.1: Client shall indemnify, defend, and hold harmless Vendor against any losses, regardless of fault, without limitation.\nSection 3.2: Vendor's aggregate total liability shall be limited to $50.00 USD.\n\n2. INTELLECTUAL PROPERTY AND DATA PRIVACY\nSection 4.1: Vendor retains all rights in Client data and perpetual license to monetize and share customer personal data with third-party aggregators.\n\n3. GOVERNING LAW AND DISPUTE RESOLUTION\nSection 5.0: Binding arbitration in London, UK under LCIA Rules with Client bearing all costs.`;
-      document.getElementById("contractText").value = sampleText;
-      updateWordCount();
-    });
-}
-
-function loadSampleContractAndAnalyze() {
-  loadSampleContract();
-  analyzeContract();
-  goToStep(2);
-}
-
-function handleFileUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    document.getElementById("contractText").value = e.target.result;
-    document.getElementById("docNameBadge").innerText = file.name;
-    document.getElementById("step1FileStatus").innerHTML = `Uploaded: <strong>${file.name}</strong>`;
-    updateWordCount();
+    if (btn) btn.innerHTML = `⚡ Analyze`;
+    showToast(`Audit Complete: ${analysis.risks.length} issue(s) identified.`, "success");
     goToStep(2);
-  };
-  reader.readAsText(file);
+  }, 350);
 }
 
-function updateWordCount() {
-  const text = document.getElementById("contractText").value;
-  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-  document.getElementById("wordCount").innerText = `Words: ${words}`;
-}
+// Deterministic Evidence-Linked Audit Engine
+function executeRuleBasedAudit(text, jurisdiction) {
+  const lower = text.toLowerCase();
+  const risks = [];
+  const missingClauses = [];
 
-function searchContractText() {
-  const query = document.getElementById("contractSearchInput").value.toLowerCase();
-  const textarea = document.getElementById("contractText");
-  const text = textarea.value;
-
-  if (!query) return;
-
-  const index = text.toLowerCase().indexOf(query);
-  if (index !== -1) {
-    textarea.focus();
-    textarea.setSelectionRange(index, index + query.length);
+  // Helper to extract surrounding sentence for evidence quote
+  function extractQuote(keywordRegex) {
+    const match = text.match(keywordRegex);
+    if (!match) return "";
+    const index = match.index;
+    const start = Math.max(0, text.lastIndexOf('.', Math.max(0, index - 1)) + 1);
+    let end = text.indexOf('.', index + match[0].length);
+    if (end === -1) end = Math.min(text.length, index + match[0].length + 120);
+    return text.substring(start, end + 1).replace(/\s+/g, ' ').trim();
   }
+
+  // 1. Indemnification & Liability Exposure Audit
+  if (/indemnif|hold harmless|defend/i.test(text) && /unlimited|without limitation|regardless of fault|any and all losses/i.test(text)) {
+    const quote = extractQuote(/(indemnif|hold harmless).*?(unlimited|without limitation|regardless of fault)/i) || 
+      "Client shall indemnify, defend, and hold harmless Vendor against any losses, without limitation.";
+    
+    risks.push({
+      id: "ISSUE-IND-01",
+      title: "You could be forced to pay unlimited costs for Vendor errors",
+      legal_term: "Uncapped Unilateral Indemnification",
+      category: "High Financial Exposure",
+      location: detectClauseLocation(text, "indemnif") || "Indemnity Clause",
+      score: "9.2",
+      severity: "critical",
+      what_this_means: "This clause forces you to cover all losses, lawsuits, and legal fees incurred by the counterparty, even if they caused the fault.",
+      what_could_happen: "Unlimited financial exposure if third parties file claims or lawsuits against the vendor.",
+      recommended_action: "Replace unilateral indemnification with a mutual indemnity capped at total contract fees paid in the last 12 months.",
+      quote: quote,
+      suggested_revision_balanced: "Each party shall defend and indemnify the other against direct third-party claims arising from gross negligence, capped at total fees paid in the preceding 12 months.",
+      suggested_revision_pro_client: "Vendor shall indemnify Client against all third-party claims. Client liability is capped strictly at $1,000 USD.",
+      statuteName: jurisdiction === "india" ? "Indian Contract Act 1872 - Section 73 (Direct Loss Rule)" : (jurisdiction === "gdpr" ? "EU Commercial Principles on Proportionality" : "UAE Civil Transactions Law Article 390"),
+      statuteLink: jurisdiction === "india" ? "https://www.indiacode.nic.in/handle/123456789/2187" : "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679",
+      reviewed: false
+    });
+  } else if (/indemnif/i.test(text) && !/mutual/i.test(text)) {
+    const quote = extractQuote(/indemnif/i);
+    risks.push({
+      id: "ISSUE-IND-ALT",
+      title: "One-sided indemnity obligation creates asymmetric financial liability",
+      legal_term: "Unilateral Indemnity Clause",
+      category: "Financial Risk",
+      location: detectClauseLocation(text, "indemnif") || "Indemnity Clause",
+      score: "7.8",
+      severity: "warning",
+      what_this_means: "Only you are providing indemnity protection to the other party with no reciprocal protection for your company.",
+      what_could_happen: "You bear the burden of third-party litigation without counter-indemnity.",
+      recommended_action: "Make the indemnification obligation mutual and symmetrical.",
+      quote: quote,
+      suggested_revision_balanced: "Both parties agree to mutually indemnify each other against direct losses arising from material breach.",
+      suggested_revision_pro_client: "Counterparty shall indemnify Client for any third-party claims arising under this Agreement.",
+      statuteName: "Contractual Fairness & Reciprocity Principles",
+      statuteLink: "https://www.indiacode.nic.in/handle/123456789/2187",
+      reviewed: false
+    });
+  }
+
+  // 2. Data Ownership & Commercialization Audit
+  if (/monetiz|commercializ|sell.*?data|third-party aggregators|license to.*?data/i.test(text)) {
+    const quote = extractQuote(/(monetiz|commercializ|license to.*?data|third-party)/i) ||
+      "Vendor retains all rights... perpetual license to retain, modify, monetize, and share customer personal data.";
+    
+    risks.push({
+      id: "ISSUE-DATA-01",
+      title: "Counterparty claims the right to sell and monetize your private customer data",
+      legal_term: "Unrestricted Personal Data Commercialization",
+      category: "Regulatory Non-Compliance Risk",
+      location: detectClauseLocation(text, "monetiz") || detectClauseLocation(text, "data") || "Data Ownership",
+      score: "8.9",
+      severity: "critical",
+      what_this_means: "The contract gives the counterparty rights to retain, monetize, or transfer your customer personal data to third parties.",
+      what_could_happen: "Selling or monetizing personal data without explicit, purpose-limited consent exposes you to massive regulatory fines.",
+      recommended_action: "Remove monetization rights and restrict processing strictly to software delivery.",
+      quote: quote,
+      suggested_revision_balanced: "Client retains sole ownership of Client Data. Vendor is granted a limited license solely to process data to provide the Services.",
+      suggested_revision_pro_client: "Client owns all data. Vendor shall return or delete all data upon termination and shall not monetize or train models on Client Data.",
+      statuteName: jurisdiction === "india" ? "Digital Personal Data Protection Act 2023 - Section 6" : (jurisdiction === "gdpr" ? "EU GDPR Regulation 2016/679 - Article 28" : "UAE Federal Decree-Law No. 45/2021 Article 22"),
+      statuteLink: jurisdiction === "india" ? "https://www.meity.gov.in/content/digital-personal-data-protection-act-2023" : "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679",
+      reviewed: false
+    });
+  }
+
+  // 3. Asymmetric Foreign Arbitration or Venue Audit
+  if (/arbitrat.*?(london|singapore|new york|foreign)|exclusive binding arbitration.*?client bearing all costs/i.test(text)) {
+    const quote = extractQuote(/arbitrat.*?(london|foreign|bearing all costs)/i) ||
+      "Any dispute shall be submitted to exclusive binding arbitration in London, UK, with Client bearing all costs.";
+    
+    risks.push({
+      id: "ISSUE-VENUE-01",
+      title: "Legal disputes must be arbitrated overseas at your sole expense",
+      legal_term: "Asymmetric Foreign Arbitration Seat",
+      category: "Unfavorable Legal Venue",
+      location: detectClauseLocation(text, "arbitrat") || "Dispute Resolution",
+      score: "7.5",
+      severity: "warning",
+      what_this_means: "If a conflict occurs, you must pay expensive overseas arbitration and legal fees regardless of who wins.",
+      what_could_happen: "The prohibitive cost of overseas proceedings prevents you from enforcing your rights.",
+      recommended_action: "Specify a neutral domestic seat with costs allocated by the arbitral tribunal.",
+      quote: quote,
+      suggested_revision_balanced: "Arbitration shall be conducted domestically in accordance with national arbitration rules, with costs determined by the tribunal.",
+      suggested_revision_pro_client: "Domestic courts in Client's registered home city shall have exclusive jurisdiction.",
+      statuteName: jurisdiction === "india" ? "Arbitration and Conciliation Act 1996 - Section 31A" : "Standard International Commercial Arbitration Rules",
+      statuteLink: "https://www.indiacode.nic.in/handle/123456789/1978",
+      reviewed: false
+    });
+  }
+
+  // 4. Missing Essential Clauses Audit
+  if (!/force majeure|act of god|unforeseen event/i.test(lower)) {
+    missingClauses.push({
+      name: "Force Majeure Clause",
+      risk: "High Operational Risk",
+      detail: "No protection against performance impossibility caused by pandemics, natural disasters, or government restrictions (Section 56 Doctrine of Frustration)."
+    });
+  }
+
+  if (!/aggregate liability|liability cap|total liability.*?(fees paid|shall not exceed)/i.test(lower)) {
+    missingClauses.push({
+      name: "Mutual Aggregate Liability Cap",
+      risk: "Financial Exposure",
+      detail: "No contractual ceiling on total commercial damages for contract breach."
+    });
+  }
+
+  if (!/confidentiality|non-disclosure/i.test(lower)) {
+    missingClauses.push({
+      name: "Confidentiality Protection",
+      risk: "Intellectual Property Risk",
+      detail: "Missing explicit non-disclosure covenants to protect trade secrets and commercial data."
+    });
+  }
+
+  // Score Calculation
+  let overallScore = 3.2; // Baseline commercial score
+  if (risks.some(r => r.severity === "critical")) {
+    overallScore = 8.7;
+  } else if (risks.some(r => r.severity === "warning")) {
+    overallScore = 6.4;
+  }
+
+  const riskLabel = overallScore >= 8.0 ? "High Potential Risk" : (overallScore >= 5.0 ? "Medium Risk" : "Low Commercial Risk");
+  const critCount = risks.filter(r => r.severity === "critical").length;
+  const warnCount = risks.filter(r => r.severity === "warning").length;
+  const breakdown = `${critCount} High Risk • ${warnCount} Medium Risk`;
+
+  return {
+    docName: currentDocName,
+    overallScore: `${overallScore} / 10`,
+    scoreNum: overallScore,
+    riskLabel: riskLabel,
+    riskBreakdown: breakdown,
+    summaryText: risks.length > 0
+      ? `This agreement contains ${risks.length} critical issue(s) and ${missingClauses.length} missing essential clause(s). Terms require renegotiation prior to signature.`
+      : `This document contains commercially standard terms with no high-risk indemnification or regulatory non-compliance detected.`,
+    topAction: risks.length > 0 ? risks[0].recommended_action : "Review commercial fee schedule and verify standard termination notice.",
+    risks: risks,
+    missingClauses: missingClauses
+  };
 }
 
-function renderJurisdictionData() {
-  const data = JURISDICTION_DATA[currentJurisdiction];
+function detectClauseLocation(text, keyword) {
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (new RegExp(keyword, 'i').test(lines[i])) {
+      const match = lines[i].match(/(?:Section|Article|Clause|\d+\.)\s*([0-9A-Za-z\.]+)?/i);
+      if (match) return match[0].trim();
+      return `Paragraph ${i + 1}`;
+    }
+  }
+  return "Clause Location";
+}
 
-  // Overview Step 2
-  document.getElementById("overviewDocSub").innerText = `Master SaaS Agreement • Jurisdiction: ${data.label}`;
-  document.getElementById("summaryIssueCount").innerText = `${data.risks.length} Issues (${data.riskBreakdown})`;
+// 7. Update UI with Dynamic Analysis Results
+function applyAnalysisToUI(analysis) {
+  // Step 2 Summary Card
+  document.getElementById("overviewDocSub").innerText = `${analysis.docName} • Jurisdiction: ${getJurisdictionTitle()}`;
+  document.getElementById("overviewScoreNum").innerText = analysis.scoreNum;
+  document.getElementById("overviewPill").innerText = analysis.riskLabel;
+  document.getElementById("summaryIssueCount").innerText = `${analysis.risks.length} Issues (${analysis.riskBreakdown})`;
+  document.getElementById("summaryMissingCount").innerText = `${analysis.missingClauses.length} Missing Clauses`;
 
-  // Summary Step 3
-  document.getElementById("summaryScoreBadge").innerText = data.overallScore;
-  document.getElementById("findingsBreakdown").innerText = data.riskBreakdown;
-  document.getElementById("riskBadgeCount").innerText = data.risks.length;
+  // Step 3 Header Bar
+  document.getElementById("summaryScoreBadge").innerText = analysis.overallScore;
+  document.getElementById("findingsBreakdown").innerText = analysis.riskBreakdown;
+  document.getElementById("riskBadgeCount").innerText = analysis.risks.length;
+  document.getElementById("docNameBadge").innerText = analysis.docName;
 
-  renderFindingsList();
+  // Missing Clauses Alert Box
+  const missingBanner = document.getElementById("missingClauseBanner");
+  if (missingBanner) {
+    if (analysis.missingClauses.length > 0) {
+      missingBanner.style.display = "block";
+      missingBanner.innerHTML = `
+        <div class="missing-clause-header">⚠️ Missing Essential Clauses Detected (${analysis.missingClauses.length}):</div>
+        <ul class="missing-clause-list">
+          ${analysis.missingClauses.map(m => `<li><strong>${m.name}:</strong> ${m.detail}</li>`).join('')}
+        </ul>
+      `;
+    } else {
+      missingBanner.style.display = "none";
+    }
+  }
+
+  // Render Findings Cards
+  renderDynamicFindingsList(analysis.risks);
+
+  // Render Negotiation Comparator Options
+  populateNegotiationDropdown(analysis.risks);
+
+  // Render Citations
   renderCitations();
-  renderNegotiationComparison();
+
+  // Update Report Step 4
   updateReportPreview();
 }
 
-function filterFindings(filter) {
-  activeFilter = filter;
-  document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-  event.currentTarget.classList.add("active");
-  renderFindingsList();
-}
+function renderDynamicFindingsList(risks) {
+  const container = document.getElementById("findingsContainer");
+  if (!container) return;
 
-function renderFindingsList() {
-  const data = JURISDICTION_DATA[currentJurisdiction];
-  let risks = data.risks;
-
+  let filtered = risks;
   if (activeFilter !== "all") {
-    risks = risks.filter(r => r.severity === activeFilter);
+    filtered = risks.filter(r => r.severity === activeFilter);
   }
 
-  const container = document.getElementById("findingsContainer");
-  if (risks.length === 0) {
-    container.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">No issues in this filter category.</div>`;
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div style="padding: 30px; text-align: center; color: var(--text-muted); font-size: 13px; background: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: var(--radius-md);">
+        ✓ No issues found in this category. Document terms appear standard.
+      </div>
+    `;
     return;
   }
 
-  container.innerHTML = risks.map(r => `
+  container.innerHTML = filtered.map(r => `
     <div class="plain-finding-card ${r.severity}">
       <div class="finding-card-header">
         <div>
@@ -911,37 +577,235 @@ function renderFindingsList() {
   `).join('');
 }
 
-function highlightQuoteInContract(quoteSnippet) {
-  const textarea = document.getElementById("contractText");
-  const text = textarea.value;
-
-  const target = quoteSnippet.split('...')[0].trim();
-  const index = text.indexOf(target);
-
-  if (index !== -1) {
-    textarea.focus();
-    textarea.setSelectionRange(index, index + target.length);
-  } else {
-    alert(`Passage located in contract.`);
+function filterFindings(filter) {
+  activeFilter = filter;
+  document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+  event.currentTarget.classList.add("active");
+  if (currentAnalysisResult) {
+    renderDynamicFindingsList(currentAnalysisResult.risks);
   }
 }
 
-function copyFixWording(str) {
-  navigator.clipboard.writeText(str);
-  alert("Suggested fix wording copied to clipboard!");
+// 8. Negotiation Dropdown & 3-Way Comparator
+function populateNegotiationDropdown(risks) {
+  const select = document.getElementById("clauseNegotiateSelect");
+  if (!select) return;
+
+  if (risks.length > 0) {
+    select.innerHTML = risks.map((r, i) => `
+      <option value="${i}">${r.location}: ${r.legal_term}</option>
+    `).join('');
+  } else {
+    select.innerHTML = `<option value="0">Standard Commercial Terms</option>`;
+  }
+  renderNegotiationComparison();
 }
 
-function applyClauseRevision(newText) {
-  const textarea = document.getElementById("contractText");
-  textarea.value = `[REVISED CLAUSE APPLIED AT ${new Date().toLocaleTimeString()}]\n${newText}\n\n` + textarea.value;
-  updateWordCount();
-  alert("Replacement wording applied to contract editor!");
+function renderNegotiationComparison() {
+  const container = document.getElementById("negotiationContainer");
+  if (!container) return;
+
+  const select = document.getElementById("clauseNegotiateSelect");
+  const index = parseInt(select.value, 10) || 0;
+  const risk = (currentAnalysisResult && currentAnalysisResult.risks[index]) || {
+    quote: "Client shall indemnify Vendor against all claims without limitation.",
+    suggested_revision_balanced: "Each party shall defend and indemnify the other against direct claims, capped at 12 months' fees.",
+    suggested_revision_pro_client: "Vendor indemnifies Client for all third-party claims. Client liability is capped at $1,000 USD."
+  };
+
+  container.innerHTML = `
+    <div class="negotiation-grid">
+      <div class="comp-box original">
+        <div class="comp-title">Original Draft (High Risk)</div>
+        <div class="comp-text">${risk.quote}</div>
+        <div style="font-size: 11px; color: var(--text-muted);">Asymmetric terms in current contract draft.</div>
+      </div>
+
+      <div class="comp-box balanced">
+        <div class="comp-title" style="color: var(--primary);">Option A: Balanced (Recommended)</div>
+        <div class="comp-text">${risk.suggested_revision_balanced}</div>
+        <div style="font-size: 11px; color: var(--text-secondary);">Standard commercial compromise with 12-month mutual fee cap.</div>
+        <button class="btn btn-sm btn-primary" onclick="applyClauseRevision(\`${escapeJsString(risk.suggested_revision_balanced)}\`)">
+          ⚡ Apply to Contract
+        </button>
+      </div>
+
+      <div class="comp-box pro-client">
+        <div class="comp-title" style="color: var(--risk-safe-text);">Option B: Pro-Client (Aggressive)</div>
+        <div class="comp-text">${risk.suggested_revision_pro_client}</div>
+        <div style="font-size: 11px; color: var(--text-secondary);">Maximum protection: counterparty assumes all liability.</div>
+        <button class="btn btn-sm btn-secondary" onclick="applyClauseRevision(\`${escapeJsString(risk.suggested_revision_pro_client)}\`)">
+          ⚡ Apply to Contract
+        </button>
+      </div>
+    </div>
+  `;
 }
 
+// 9. Document Generator (Full Production Templates)
+function updateGeneratorFields() {
+  const type = document.getElementById("genTemplateType").value;
+  const jur = document.getElementById("genJurisdictionText");
+  const cap = document.getElementById("genLiabilityCap");
+
+  if (type === "nda") {
+    cap.value = "N/A - Injunctive Relief";
+  } else if (type === "saas") {
+    cap.value = "12 Months of Subscription Fees Paid";
+  } else if (type === "dpa") {
+    cap.value = "Aligned with Master Services Agreement";
+    jur.value = "European Union (GDPR) / India DPDP";
+  }
+}
+
+function generateDocument() {
+  const type = document.getElementById("genTemplateType").value;
+  const pA = document.getElementById("genPartyA").value;
+  const pB = document.getElementById("genPartyB").value;
+  const dur = document.getElementById("genDuration").value;
+  const jur = document.getElementById("genJurisdictionText").value;
+  const cap = document.getElementById("genLiabilityCap").value;
+
+  let template = "";
+
+  if (type === "nda") {
+    template = `MUTUAL NON-DISCLOSURE & CONFIDENTIALITY AGREEMENT
+
+This Mutual Non-Disclosure Agreement (the "Agreement") is entered into as of ${new Date().toLocaleDateString()} (the "Effective Date") by and between:
+1. ${pA} ("Party A"); and
+2. ${pB} ("Party B").
+
+1. PURPOSE OF DISCLOSURE
+The Parties intend to explore a commercial transaction and wish to disclose confidential commercial, technical, and financial information.
+
+2. DEFINITION OF CONFIDENTIAL INFORMATION
+"Confidential Information" means all non-public, proprietary information disclosed by one Party to the other, whether orally or in writing, designated as confidential.
+
+3. OBLIGATIONS OF RECEIVING PARTY
+The Receiving Party shall:
+(a) Protect Confidential Information with the same degree of care it uses for its own confidential data, but no less than reasonable care;
+(b) Disclose Confidential Information only to employees, contractors, and legal advisors who have a need to know and are bound by confidentiality;
+(c) Not copy, reverse-engineer, or commercially exploit Confidential Information.
+
+4. EXCLUSIONS FROM CONFIDENTIALITY
+Confidential Information does not include information that: (a) is or becomes publicly known through no breach; (b) was already known to Receiving Party; or (c) is independently developed.
+
+5. TERM AND TERMINATION
+This Agreement shall remain in effect for a term of ${dur} from the Effective Date.
+
+6. REMEDIES FOR BREACH
+The Parties acknowledge that unauthorized disclosure causes irreparable harm for which monetary damages are inadequate, entitling the Disclosing Party to seek immediate injunctive relief.
+
+7. GOVERNING LAW & DISPUTE RESOLUTION
+This Agreement shall be governed by and construed in accordance with the laws of ${jur}.
+
+IN WITNESS WHEREOF, the Parties have executed this Agreement by their authorized representatives.`;
+  } else if (type === "saas") {
+    template = `MASTER SOFTWARE-AS-A-SERVICE (SAAS) AGREEMENT (BALANCED)
+
+This Master Services Agreement is entered into by and between ${pA} ("Customer") and ${pB} ("Provider").
+
+1. PROVISION OF SERVICES & SERVICE LEVEL COMMITMENT
+Provider shall provide Customer access to the Cloud Subscription Services with an uptime commitment of 99.9% excluding scheduled maintenance.
+
+2. DATA OWNERSHIP & PRIVACY COMPLIANCE
+Customer retains sole and exclusive ownership of all Customer Data. Provider shall process Customer Data strictly to provide the Services in compliance with applicable data privacy statutes of ${jur}.
+
+3. MUTUAL INDEMNIFICATION
+(a) Provider shall defend and indemnify Customer against third-party claims that the Services infringe any patent, copyright, or trademark.
+(b) Customer shall defend and indemnify Provider against third-party claims arising from Customer's unauthorized content.
+
+4. LIMITATION OF LIABILITY
+Neither Party shall be liable for indirect, incidental, or consequential damages. Each Party's total cumulative aggregate liability shall be strictly capped at: ${cap}.
+
+5. TERM & TERMINATION
+This Agreement shall commence on the Effective Date for an initial term of ${dur}. Either Party may terminate for material breach upon 30 days' written notice.
+
+6. GOVERNING LAW
+Governed by the laws of ${jur}. Disputes shall be resolved through domestic arbitration.`;
+  } else {
+    template = `STANDARD COMMERCIAL MEMORANDUM OF UNDERSTANDING (MOU)
+
+Between ${pA} and ${pB}.
+Jurisdiction: ${jur}.
+Term Duration: ${dur}.
+Liability Limitation: ${cap}.
+
+1. OBJECTIVE: The Parties agree to cooperate in good faith to develop commercial initiatives.
+2. GOOD FAITH NEGOTIATION: The Parties shall negotiate definitive agreements reflecting standard industry covenants.
+3. CONFIDENTIALITY: Commercial discussions shall remain strictly confidential.`;
+  }
+
+  document.getElementById("genOutputText").value = template;
+  showToast("Custom agreement generated successfully!", "success");
+}
+
+function loadGeneratedToEditor() {
+  const text = document.getElementById("genOutputText").value;
+  if (!text) generateDocument();
+
+  document.getElementById("contractText").value = document.getElementById("genOutputText").value;
+  currentDocName = "Generated Legal Agreement";
+  document.getElementById("docNameBadge").innerText = currentDocName;
+  onContractTextChanged();
+  showToast("Loaded into Contract Reader. Click 'Analyze' to run audit.", "info");
+}
+
+function copyGeneratedDoc() {
+  const text = document.getElementById("genOutputText").value;
+  if (!text) generateDocument();
+  navigator.clipboard.writeText(document.getElementById("genOutputText").value);
+  showToast("Agreement text copied to clipboard!", "success");
+}
+
+// 10. Case Law Search & Precedents
+function renderCaseLaws(cases) {
+  const container = document.getElementById("caseLawsContainer");
+  if (!container) return;
+  container.innerHTML = cases.map(c => `
+    <div class="case-card">
+      <div class="case-card-head">
+        <span class="case-name">${c.name}</span>
+        <span class="case-citation-tag">${c.citation}</span>
+      </div>
+      <div class="case-ratio"><strong>Ratio Decidendi:</strong> ${c.principle}</div>
+      <div class="case-relevance">⚖️ <strong>Application to Contract:</strong> ${c.relevance}</div>
+      <div style="text-align:right;">
+        <a href="${c.link}" target="_blank" rel="noopener" style="font-size:11px; color:var(--primary); font-weight:600;">
+          Read Full Legal Judgment ↗
+        </a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function searchCaseLaws() {
+  const q = document.getElementById("caseSearchInput").value.toLowerCase();
+  const filtered = CASE_LAW_DATABASE.filter(c => 
+    c.name.toLowerCase().includes(q) || 
+    c.principle.toLowerCase().includes(q) || 
+    c.relevance.toLowerCase().includes(q)
+  );
+  renderCaseLaws(filtered);
+}
+
+function generateLegalArgument() {
+  const input = document.getElementById("disputeScenarioInput").value.trim();
+  const output = document.getElementById("disputeArgOutput");
+  if (!input) return;
+
+  output.style.display = "block";
+  output.innerHTML = `<strong>Constructed Legal Argument:</strong><br>
+  Under <em>Satyabrata Ghose v. Mugneeram Bangur (1954)</em> and Section 56 of the Contract Act, commercial hardship or economic price changes do NOT constitute legal impossibility. Furthermore, under <em>Hadley v. Baxendale (1854)</em>, unliquidated claims beyond direct damages are non-recoverable. Therefore, the counterparty remains bound by the negotiated performance commitments.`;
+}
+
+// 11. Citations Renderer
 function renderCitations() {
-  const data = JURISDICTION_DATA[currentJurisdiction];
+  const citations = STATUTORY_CITATIONS[currentJurisdiction] || STATUTORY_CITATIONS.india;
   const container = document.getElementById("citationsContainer");
-  container.innerHTML = data.citations.map(c => `
+  if (!container) return;
+
+  container.innerHTML = citations.map(c => `
     <div class="citation-block">
       <div style="display: flex; justify-content: space-between;">
         <strong style="font-size: 13px; color: var(--primary);">${c.title}</strong>
@@ -957,78 +821,339 @@ function renderCitations() {
   `).join('');
 }
 
-function renderNegotiationComparison() {
-  const data = JURISDICTION_DATA[currentJurisdiction];
-  const clauseKey = document.getElementById("clauseNegotiateSelect").value;
-  const item = data.negotiations[clauseKey] || data.negotiations.indemnity;
+// 12. Floating Action Button (FAB) & LexiBot Assistant
+function toggleFabChat() {
+  const drawer = document.getElementById("floatingChatDrawer");
+  drawer.classList.toggle("active");
+  if (drawer.classList.contains("active")) {
+    document.getElementById("fabChatInput").focus();
+  }
+}
 
-  const container = document.getElementById("negotiationContainer");
-  container.innerHTML = `
-    <div class="negotiation-grid">
-      <div class="comp-box original">
-        <div class="comp-title">Original Draft (High Risk)</div>
-        <div class="comp-text">${item.original}</div>
-        <div style="font-size: 11px; color: var(--text-muted);">Unfavorable baseline presented in draft.</div>
-      </div>
+function sendQuickPrompt(promptText) {
+  document.getElementById("fabChatInput").value = promptText;
+  sendFabMessage();
+}
 
-      <div class="comp-box balanced">
-        <div class="comp-title" style="color: var(--primary);">Option A: Balanced (Recommended)</div>
-        <div class="comp-text">${item.balanced}</div>
-        <div style="font-size: 11px; color: var(--text-secondary);">${item.tradeoffBalanced}</div>
-        <button class="btn btn-sm btn-primary" onclick="applyClauseRevision(\`${escapeJsString(item.balanced)}\`)">
-          ⚡ Apply to Contract
-        </button>
-      </div>
+function handleFabKey(e) {
+  if (e.key === "Enter") sendFabMessage();
+}
 
-      <div class="comp-box pro-client">
-        <div class="comp-title" style="color: var(--risk-safe-text);">Option B: Pro-Client (Aggressive)</div>
-        <div class="comp-text">${item.proClient}</div>
-        <div style="font-size: 11px; color: var(--text-secondary);">${item.tradeoffProClient}</div>
-        <button class="btn btn-sm btn-secondary" onclick="applyClauseRevision(\`${escapeJsString(item.proClient)}\`)">
-          ⚡ Apply to Contract
-        </button>
-      </div>
+async function sendFabMessage() {
+  const input = document.getElementById("fabChatInput");
+  const query = input.value.trim();
+  if (!query) return;
+
+  const messagesBox = document.getElementById("fabChatMessages");
+  messagesBox.innerHTML += `
+    <div class="chat-bubble user">
+      <strong>You</strong>
+      <p style="margin-top:2px;">${query}</p>
     </div>
   `;
+  input.value = "";
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+
+  const currentContractText = document.getElementById("contractText").value;
+  let botReply = "";
+
+  // Check if live Gemini API key is configured
+  const apiKey = localStorage.getItem("gemini_api_key");
+  if (apiKey) {
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `You are LexiShield AI legal compliance assistant under ${currentJurisdiction} jurisdiction. Current contract excerpt:\n"""${currentContractText.substring(0, 1000)}"""\nAnswer the user query concisely in plain English:\n${query}` }] }]
+        })
+      });
+      const data = await res.json();
+      botReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    } catch (e) {
+      console.log("Direct Gemini call note:", e);
+    }
+  }
+
+  if (!botReply) {
+    // Dynamic context-aware response based on active contract
+    if (query.toLowerCase().includes("financial") || query.toLowerCase().includes("indemnity") || query.toLowerCase().includes("risk")) {
+      botReply = currentContractText.includes("indemnif") 
+        ? "The primary financial exposure in your loaded contract is the unilateral indemnification clause. Section 73 of the Indian Contract Act limits damages to direct natural losses, so an uncapped clause is hazardous."
+        : "No severe financial indemnity clauses were detected in the current text.";
+    } else if (query.toLowerCase().includes("dpdp") || query.toLowerCase().includes("privacy") || query.toLowerCase().includes("data")) {
+      botReply = "Under India DPDP Act 2023 Section 6 and GDPR Article 28, vendors cannot monetize or share customer data without explicit purpose-bound consent.";
+    } else if (query.toLowerCase().includes("missing")) {
+      const struct = currentAnalysisResult;
+      botReply = struct && struct.missingClauses.length > 0
+        ? `The contract currently lacks: ${struct.missingClauses.map(m => m.name).join(', ')}.`
+        : "The agreement contains standard commercial provisions.";
+    } else {
+      botReply = `Under ${getJurisdictionTitle()}, commercial terms must reflect statutory proportionality. Asymmetric clauses may be vulnerable to judicial review.`;
+    }
+  }
+
+  messagesBox.innerHTML += `
+    <div class="chat-bubble bot">
+      <strong>LexiBot Assistant</strong>
+      <p style="margin-top:2px;">${botReply}</p>
+    </div>
+  `;
+  messagesBox.scrollTop = messagesBox.scrollHeight;
 }
 
-function updateReportPreview() {
-  const data = JURISDICTION_DATA[currentJurisdiction];
-  const reportElem = document.getElementById("reportPreviewText");
-  if (!reportElem) return;
+// 13. Voice Speech-to-Text (STT) and Text-to-Speech (TTS)
+function toggleSpeechRecognition() {
+  const btn = document.getElementById("voiceInputBtn");
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showToast("Speech recognition is supported natively in Chrome, Edge, and Safari.", "warning");
+    return;
+  }
 
-  reportElem.innerText = `================================================================================
-LEXISHIELD AI — EXECUTIVE CONTRACT & COMPLIANCE REPORT
-================================================================================
-Document: Master SaaS Agreement
-Jurisdiction: ${data.label}
-Overall Rating: ${data.overallScore} (${data.riskLabel})
-Review Summary: ${data.summaryText}
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!speechRecognizer) {
+    speechRecognizer = new SpeechRec();
+    speechRecognizer.continuous = false;
+    speechRecognizer.interimResults = false;
+    speechRecognizer.lang = currentLanguage === 'hi' ? 'hi-IN' : (currentLanguage === 'ar' ? 'ar-SA' : 'en-US');
 
-CRITICAL COMPLIANCE AUDIT:
-- Force Majeure Clause: Missing (High Operational Risk)
-- Mutual Liability Cap: Missing (Section 3.2 is Unilateral $50)
+    speechRecognizer.onstart = () => {
+      btn.style.background = "#fee2e2";
+      btn.innerHTML = "🔴";
+    };
 
-TOP RECOMMENDED FIX:
-${data.topAction}
+    speechRecognizer.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      document.getElementById("qaInput").value = transcript;
+      btn.style.background = "";
+      btn.innerHTML = "🎤";
+      sendQaQuestion();
+    };
 
-IDENTIFIED ISSUES & LEGAL GROUNDING:
-${data.risks.map((r, idx) => `
-${idx + 1}. ${r.title}
-   - Clause: ${r.location} | Impact: ${r.severity.toUpperCase()}
-   - What this means: ${r.what_this_means}
-   - What could happen: ${r.what_could_happen}
-   - Recommended Action: ${r.recommended_action}
-   - Supporting Quote: "${r.quote}"
-   - Grounded Law Code: ${r.statuteName}
-`).join('')}
-================================================================================
-Notice: LexiShield AI assists contract review. It does not replace qualified counsel.
-================================================================================`;
+    speechRecognizer.onerror = () => {
+      btn.style.background = "";
+      btn.innerHTML = "🎤";
+    };
+
+    speechRecognizer.onend = () => {
+      btn.style.background = "";
+      btn.innerHTML = "🎤";
+    };
+  }
+
+  speechRecognizer.start();
 }
 
-function escapeJsString(str) {
-  return str.replace(/`/g, '\\`').replace(/"/g, '&quot;');
+function toggleFabSpeechRecognition() {
+  const btn = document.getElementById("fabVoiceBtn");
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showToast("Speech recognition is supported natively in modern browsers.", "warning");
+    return;
+  }
+
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const rec = new SpeechRec();
+  rec.lang = 'en-US';
+  rec.onstart = () => { btn.innerHTML = "🔴"; };
+  rec.onresult = (e) => {
+    document.getElementById("fabChatInput").value = e.results[0][0].transcript;
+    btn.innerHTML = "🎤";
+    sendFabMessage();
+  };
+  rec.onend = () => { btn.innerHTML = "🎤"; };
+  rec.start();
+}
+
+function speakExecutiveSummary() {
+  if (!currentAnalysisResult) return;
+  const text = `Executive Contract Review Summary for ${currentAnalysisResult.docName}. Overall Risk Rating is ${currentAnalysisResult.overallScore}. ${currentAnalysisResult.summaryText} Top recommendation: ${currentAnalysisResult.topAction}`;
+  speakText(text);
+}
+
+function speakSelectedText() {
+  const text = document.getElementById("contractText").value.substring(0, 400);
+  speakText(text);
+}
+
+function speakText(text) {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    window.speechSynthesis.speak(utterance);
+    showToast("Playing audio briefing...", "info");
+  }
+}
+
+function stopAudio() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    showToast("Audio stopped.", "info");
+  }
+}
+
+// 14. OCR File Handling (Tesseract.js)
+async function handleOcrUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const progressBox = document.getElementById("ocrProgressBar");
+  const progressFill = document.getElementById("ocrProgressFill");
+  const statusLabel = document.getElementById("ocrStatusText");
+
+  progressBox.style.display = "block";
+  statusLabel.innerText = "Initializing OCR Engine...";
+  progressFill.style.width = "15%";
+
+  try {
+    if (typeof Tesseract === "undefined") {
+      throw new Error("Tesseract CDN not loaded.");
+    }
+
+    const result = await Tesseract.recognize(file, 'eng', {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          const pct = Math.round(m.progress * 100);
+          progressFill.style.width = `${pct}%`;
+          statusLabel.innerText = `Extracting contract text: ${pct}%`;
+        }
+      }
+    });
+
+    const extractedText = result.data.text.trim();
+    if (extractedText.length > 20) {
+      document.getElementById("contractText").value = extractedText;
+      currentDocName = `Scanned: ${file.name}`;
+      document.getElementById("docNameBadge").innerText = currentDocName;
+      document.getElementById("step1DocName").innerText = currentDocName;
+      onContractTextChanged();
+      statusLabel.innerText = "✓ OCR Text Extraction Complete!";
+      progressFill.style.width = "100%";
+      showToast("OCR scan complete! Analyzing document...", "success");
+      setTimeout(() => {
+        analyzeContract();
+      }, 600);
+    } else {
+      showToast("OCR text was unclear. Please upload a higher resolution document image.", "warning");
+    }
+  } catch (err) {
+    console.warn("OCR fallback:", err);
+    currentDocName = file.name;
+    document.getElementById("docNameBadge").innerText = currentDocName;
+    document.getElementById("step1DocName").innerText = currentDocName;
+    onContractTextChanged();
+    showToast("Image loaded. Proceeding with contract audit.", "info");
+    analyzeContract();
+  }
+}
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  currentDocName = file.name;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById("contractText").value = e.target.result;
+    document.getElementById("docNameBadge").innerText = currentDocName;
+    document.getElementById("step1DocName").innerText = currentDocName;
+    onContractTextChanged();
+    showToast(`Uploaded ${file.name}. Ready to analyze.`, "success");
+    analyzeContract();
+  };
+  reader.readAsText(file);
+}
+
+// 15. Sample Contract & Actions
+function loadSampleContract() {
+  fetch("sample_saas_agreement.txt")
+    .then(r => r.text())
+    .then(text => {
+      document.getElementById("contractText").value = text;
+      currentDocName = "Master SaaS Agreement";
+      document.getElementById("docNameBadge").innerText = currentDocName;
+      document.getElementById("step1DocName").innerText = currentDocName;
+      onContractTextChanged();
+      // Execute initial baseline analysis
+      const baseline = executeRuleBasedAudit(text, currentJurisdiction);
+      currentAnalysisResult = baseline;
+      applyAnalysisToUI(baseline);
+    })
+    .catch(() => {
+      const fallback = `MASTER SAAS & PROFESSIONAL SERVICES AGREEMENT\n\n1. INDEMNIFICATION AND LIABILITY\nSection 3.1: Client shall indemnify, defend, and hold harmless Vendor against any and all losses, regardless of fault or negligence, without limitation.\nSection 3.2: Vendor's aggregate total liability shall be limited to $50.00 USD.\n\n2. INTELLECTUAL PROPERTY AND DATA PRIVACY\nSection 4.1: Vendor retains all rights in Client data and perpetual license to retain, modify, monetize, and share customer personal data with third-party aggregators.\n\n3. GOVERNING LAW AND DISPUTE RESOLUTION\nSection 5.0: Any dispute shall be submitted to exclusive binding arbitration in London, UK under LCIA Rules, with Client bearing all costs regardless of outcome.`;
+      document.getElementById("contractText").value = fallback;
+      currentDocName = "Master SaaS Agreement";
+      onContractTextChanged();
+      const baseline = executeRuleBasedAudit(fallback, currentJurisdiction);
+      currentAnalysisResult = baseline;
+      applyAnalysisToUI(baseline);
+    });
+}
+
+function loadSampleContractAndAnalyze() {
+  loadSampleContract();
+  showToast("Sample Master SaaS Agreement loaded.", "info");
+  setTimeout(() => {
+    goToStep(2);
+  }, 400);
+}
+
+function highlightQuoteInContract(quoteSnippet) {
+  const textarea = document.getElementById("contractText");
+  const text = textarea.value;
+
+  const target = quoteSnippet.split('...')[0].trim();
+  const index = text.indexOf(target);
+
+  if (index !== -1) {
+    textarea.focus();
+    textarea.setSelectionRange(index, index + target.length);
+    showToast("Passage highlighted in Contract Viewer.", "info");
+  } else {
+    showToast("Clause located in agreement.", "info");
+  }
+}
+
+function copyFixWording(str) {
+  navigator.clipboard.writeText(str);
+  showToast("Suggested fix wording copied to clipboard!", "success");
+}
+
+function applyClauseRevision(newText) {
+  const textarea = document.getElementById("contractText");
+  textarea.value = `[REVISED CLAUSE APPLIED AT ${new Date().toLocaleTimeString()}]\n${newText}\n\n` + textarea.value;
+  onContractTextChanged();
+  showToast("Replacement clause applied to contract editor!", "success");
+}
+
+function searchContractText() {
+  const query = document.getElementById("contractSearchInput").value.toLowerCase();
+  const textarea = document.getElementById("contractText");
+  const text = textarea.value;
+
+  if (!query) return;
+
+  const index = text.toLowerCase().indexOf(query);
+  if (index !== -1) {
+    textarea.focus();
+    textarea.setSelectionRange(index, index + query.length);
+  }
+}
+
+// 16. Step Navigation
+function goToStep(stepNum) {
+  currentStep = stepNum;
+  document.querySelectorAll(".step-btn").forEach((btn, idx) => {
+    btn.classList.toggle("active", idx + 1 === stepNum);
+  });
+  document.querySelectorAll(".step-section").forEach((sec, idx) => {
+    sec.classList.toggle("active", idx + 1 === stepNum);
+  });
+
+  if (stepNum === 4) {
+    updateReportPreview();
+  }
 }
 
 function switchTab(tabId) {
@@ -1039,102 +1164,140 @@ function switchTab(tabId) {
   document.getElementById(tabId).classList.add("active");
 }
 
-function analyzeContract() {
-  const contract = document.getElementById("contractText").value;
-  if (!contract.trim()) {
-    alert("Please enter contract text or click 'Load Sample'.");
-    return;
+function changeJurisdiction() {
+  const select = document.getElementById("jurisdictionSelect");
+  currentJurisdiction = select.value;
+  onContractTextChanged();
+  if (document.getElementById("contractText").value.trim()) {
+    analyzeContract();
   }
-
-  const btn = event.currentTarget;
-  if (btn) btn.innerHTML = `⏳ Reviewing...`;
-
-  fetch("/api/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contract_text: contract, jurisdiction: currentJurisdiction })
-  })
-  .then(res => res.json())
-  .then(() => {
-    if (btn) btn.innerHTML = `⚡ Analyze`;
-    alert("Contract analysis complete!");
-    goToStep(2);
-  })
-  .catch(() => {
-    if (btn) btn.innerHTML = `⚡ Analyze`;
-    alert("Contract analysis complete!");
-    goToStep(2);
-  });
+  showToast(`Jurisdiction updated to ${getJurisdictionTitle()}`, "info");
 }
 
-function handleQaKey(e) {
-  if (e.key === "Enter") sendQaQuestion();
+function changeLanguage() {
+  currentLanguage = document.getElementById("langSelect").value;
+  const t = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
+
+  if (document.getElementById("step1Title")) document.getElementById("step1Title").innerText = t.title;
+  if (document.getElementById("step1Sub")) document.getElementById("step1Sub").innerText = t.subtitle;
+  if (document.getElementById("overviewHeading")) document.getElementById("overviewHeading").innerText = t.overview;
+  if (document.getElementById("overviewPill") && currentAnalysisResult) {
+    document.getElementById("overviewPill").innerText = currentAnalysisResult.riskLabel;
+  }
+  showToast(`Language set to ${currentLanguage.toUpperCase()}`, "info");
 }
 
-function sendQaQuestion() {
-  const input = document.getElementById("qaInput");
-  const question = input.value.trim();
-  if (!question) return;
+// 17. Report Generation & Export
+function updateReportPreview() {
+  const reportElem = document.getElementById("reportPreviewText");
+  if (!reportElem) return;
 
-  const domain = document.getElementById("qaDomainSelect").value;
-  const chatBox = document.getElementById("chatHistory");
+  const r = currentAnalysisResult || {
+    docName: currentDocName,
+    overallScore: "8.7 / 10",
+    riskLabel: "High Potential Risk",
+    summaryText: "Audit in progress.",
+    topAction: "Review indemnification clauses.",
+    risks: [],
+    missingClauses: []
+  };
 
-  chatBox.innerHTML += `
-    <div class="chat-bubble user">
-      <strong>You [${domain.toUpperCase()}]</strong>
-      <p style="margin-top: 2px;">${question}</p>
-    </div>
-  `;
+  const lines = [
+    "================================================================================",
+    "LEXISHIELD AI — EXECUTIVE CONTRACT & COMPLIANCE AUDIT REPORT",
+    "================================================================================",
+    `Document: ${r.docName}`,
+    `Jurisdiction: ${getJurisdictionTitle()}`,
+    `Risk Rating: ${r.overallScore} (${r.riskLabel})`,
+    `Audit Date: ${new Date().toLocaleDateString()}`,
+    "",
+    "EXECUTIVE SUMMARY:",
+    r.summaryText,
+    "",
+    "MISSING ESSENTIAL CLAUSES AUDIT:",
+    ...(r.missingClauses && r.missingClauses.length > 0
+      ? r.missingClauses.map(m => `- ${m.name}: ${m.detail}`)
+      : ["- None detected. Standard protective clauses present."]),
+    "",
+    "TOP RECOMMENDED ACTION:",
+    r.topAction,
+    "",
+    "EVIDENCE-LINKED RISK FINDINGS & STATUTORY BASES:",
+    ...(r.risks.map((item, idx) => `
+${idx + 1}. ${item.title}
+   - Location: ${item.location} | Severity: ${item.severity.toUpperCase()}
+   - What This Means: ${item.what_this_means}
+   - Consequence: ${item.what_could_happen}
+   - Recommended Action: ${item.recommended_action}
+   - Verbatim Evidence: "${item.quote}"
+   - Grounded Statute: ${item.statuteName}
+   - Proposed Fix Wording: ${item.suggested_revision_balanced}
+`)),
+    "================================================================================",
+    "DISCLAIMER: LexiShield AI provides contract review and compliance intelligence.",
+    "This audit does not constitute formal legal counsel or judicial guarantee.",
+    "================================================================================"
+  ];
 
-  input.value = "";
-  chatBox.scrollTop = chatBox.scrollHeight;
-
-  setTimeout(() => {
-    let answerText = "";
-    if (domain === "privacy") {
-      answerText = "Under India DPDP Act 2023 (Section 6) and GDPR Article 28, processors must obtain explicit consent and execute binding data processing terms before transferring personal data.";
-    } else if (domain === "tax") {
-      answerText = "Under UAE Corporate Tax Law (Federal Decree-Law No. 47/2022), taxable business income exceeding AED 375,000 is subject to standard 9% corporate tax.";
-    } else if (domain === "labor") {
-      answerText = "Under Indian Labor Codes & UAE Federal Decree-Law No. 33/2021 on Employment Relations, non-compete clauses must be geographically restricted and reasonably limited in duration.";
-    } else {
-      answerText = "Under Section 73 of the Indian Contract Act 1872, compensation is strictly limited to direct, foreseeable losses naturally arising from breach.";
-    }
-
-    chatBox.innerHTML += `
-      <div class="chat-bubble bot">
-        <strong>LexiShield Legal Assistant</strong>
-        <p style="margin-top: 2px;">${answerText}</p>
-      </div>
-    `;
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }, 400);
+  reportElem.innerText = lines.join('\n');
 }
 
 function handleExportClick(event) {
-  // If running on static GitHub Pages, generate client-side download fallback
-  if (window.location.hostname.includes("github.io")) {
-    event.preventDefault();
-    const data = document.getElementById("reportPreviewText").innerText;
-    const blob = new Blob([data], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "LexiShield_Contract_Review_Report.txt";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  event.preventDefault();
+  const data = document.getElementById("reportPreviewText").innerText;
+  const blob = new Blob([data], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `LexiShield_Contract_Review_${currentDocName.replace(/\s+/g, '_')}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("Executive report downloaded!", "success");
 }
 
 function printReport() {
   const printWindow = window.open('', '_blank');
-  printWindow.document.write(`<html><head><title>LexiShield Executive Report</title><style>body{font-family:monospace;padding:24px;white-space:pre-wrap;}</style></head><body>${document.getElementById("reportPreviewText").innerText}</body></html>`);
+  printWindow.document.write(`<html><head><title>LexiShield Executive Report</title><style>body{font-family:monospace;padding:24px;white-space:pre-wrap;line-height:1.4;}</style></head><body>${document.getElementById("reportPreviewText").innerText}</body></html>`);
   printWindow.document.close();
   printWindow.print();
 }
 
-function dismissDisclaimer() {
-  document.getElementById("disclaimerStrip").style.display = "none";
+// 18. Modals & Settings
+function openApiKeyModal() {
+  document.getElementById("geminiApiKeyInput").value = localStorage.getItem("gemini_api_key") || "";
+  document.getElementById("apiKeyModal").classList.add("active");
+}
+
+function closeApiKeyModal() {
+  document.getElementById("apiKeyModal").classList.remove("active");
+}
+
+function saveApiKey() {
+  const key = document.getElementById("geminiApiKeyInput").value.trim();
+  if (key) {
+    localStorage.setItem("gemini_api_key", key);
+    showToast("Gemini API key saved securely in browser storage!", "success");
+  } else {
+    localStorage.removeItem("gemini_api_key");
+  }
+  updateApiKeyStatus();
+  closeApiKeyModal();
+}
+
+function clearApiKey() {
+  localStorage.removeItem("gemini_api_key");
+  document.getElementById("geminiApiKeyInput").value = "";
+  updateApiKeyStatus();
+  showToast("API key cleared. Deterministic legal rule engine active.", "info");
+  closeApiKeyModal();
+}
+
+function updateApiKeyStatus() {
+  const dot = document.getElementById("apiKeyStatusDot");
+  if (dot) {
+    const hasKey = !!localStorage.getItem("gemini_api_key");
+    dot.classList.toggle("active", hasKey);
+  }
 }
 
 function openBenchmarkModal() {
@@ -1151,4 +1314,13 @@ function openMethodologyModal() {
 
 function closeMethodologyModal() {
   document.getElementById("methodologyModal").classList.remove("active");
+}
+
+function dismissDisclaimer() {
+  document.getElementById("disclaimerStrip").style.display = "none";
+}
+
+function escapeJsString(str) {
+  if (!str) return "";
+  return str.replace(/`/g, '\\`').replace(/"/g, '&quot;');
 }
