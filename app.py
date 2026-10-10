@@ -181,10 +181,14 @@ formal legal representation or judicial guarantee.
 # Serve static files
 @app.get("/")
 async def read_root():
+    if os.path.isfile("index.html"):
+        return FileResponse("index.html")
     return FileResponse("static/index.html")
 
 @app.get("/{file_name}")
 async def read_static_file(file_name: str):
+    if os.path.isfile(file_name):
+        return FileResponse(file_name)
     file_path = os.path.join("static", file_name)
     if os.path.isfile(file_path):
         return FileResponse(file_path)
