@@ -125,8 +125,8 @@ ai_advisor/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/CHARANSAI11328/LexiShield-AI.git
-cd LexiShield-AI
+git clone https://github.com/CHARANSAI11328/ai-legal_advisor.git
+cd ai-legal_advisor
 ```
 
 ### 2. Set Up Virtual Environment
@@ -224,4 +224,4 @@ Returns empirical benchmark metrics and evaluation dataset statistics.
 
 - **Charan Sai** — [@CHARANSAI11328](https://github.com/CHARANSAI11328)
 - Email: saikamarajugadda21@gmail.com
-- Repository: [https://github.com/CHARANSAI11328/LexiShield-AI](https://github.com/CHARANSAI11328/LexiShield-AI)
+- Repository: [https://github.com/CHARANSAI11328/ai-legal_advisor](https://github.com/CHARANSAI11328/ai-legal_advisor)
