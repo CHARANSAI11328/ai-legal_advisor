@@ -14,12 +14,16 @@
 
 **LexiShield AI** is an intelligent, evidence-linked contract review co-pilot designed for business owners, startup founders, freelancers, and procurement managers who need to understand legal documents without hiring an expensive legal team for preliminary audits.
 
-Unlike black-box legal chatbots that offer vague, unsourced summaries, LexiShield AI delivers:
-1. **Evidence-Linked Risk Audits:** Every issue connects to an exact contract clause quote, explains practical business consequences, and recommends actionable revisions.
-2. **Interactive 3-Way Clause Negotiation:** Side-by-side comparison of the Original Draft against **Option A (Balanced - Recommended)** and **Option B (Pro-Client - Aggressive)** with trade-off explanations and one-click inline application.
-3. **Verified Statutory Grounding:** Cites authoritative, primary sources with working links to official legal repositories ([India Code](https://www.indiacode.nic.in), [EUR-Lex](https://eur-lex.europa.eu), [UAE Legal Portal](https://u.ae)).
-4. **Deterministic Risk Scoring:** Eliminates random hallucinations with a formula-based scoring engine ($R = \min(10, \sum w_i \cdot S_i)$).
-5. **One-Click Executive Report Export:** Generates structured review audit summaries ready to share with stakeholders or external counsel.
+1. **AI-Powered Contract & OCR Analysis:** Accepts PDF, Word, and scanned images (PNG, JPG) with in-browser Tesseract.js OCR, clause-by-clause summarization, and missing essential clauses detection.
+2. **Evidence-Linked Risk Audits:** Every issue connects to an exact contract clause quote, explains practical business consequences, and recommends actionable revisions.
+3. **Interactive 3-Way Clause Negotiation:** Side-by-side comparison of the Original Draft against **Option A (Balanced - Recommended)** and **Option B (Pro-Client - Aggressive)** with trade-off explanations and one-click inline application.
+4. **Smart Legal Document Generator:** Interactive generation of custom NDAs, MOUs, SaaS Agreements, Employment Contracts, and DPAs.
+5. **Landmark Case Law & Precedent Search:** NLP-powered exploration of foundational legal precedents (*Hadley v. Baxendale*, *Satyabrata Ghose*, *Puttaswamy*, *Schrems II*) with an AI Dispute Argument Generator.
+6. **Intelligent Floating Legal Bot (FAB):** Persistent AI compliance assistant with voice dictation, quick prompt shortcuts, and multi-domain compliance coverage.
+7. **Multilingual & Voice Support:** Speech-to-Text (STT) voice queries, Text-to-Speech (TTS) audio briefings, and language translations (English, Hindi, Arabic, Spanish, French).
+8. **Verified Statutory Grounding:** Cites authoritative, primary sources with working links to official legal repositories ([India Code](https://www.indiacode.nic.in), [EUR-Lex](https://eur-lex.europa.eu), [UAE Legal Portal](https://u.ae)).
+9. **Deterministic Risk Scoring:** Eliminates random hallucinations with a formula-based scoring engine ($R = \min(10, \sum w_i \cdot S_i)$).
+10. **One-Click Executive Report Export:** Generates structured review audit summaries ready to share with stakeholders or external counsel.
 
 ---
 

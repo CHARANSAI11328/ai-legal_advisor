@@ -3,109 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LexiShield AI | Plain-English Legal Contract Review</title>
+  <title>LexiShield AI | AI-Powered Legal Assistant for Compliance & Contracts</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Tesseract.js for In-Browser Optical Character Recognition (OCR) -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
 
-  <!-- Top Navigation & Workflow Stepper Header -->
+  <!-- Top Navigation Header -->
   <header class="app-header">
     <div class="header-left">
       <div class="brand-container">
         <div class="brand-icon">⚖️</div>
         <div class="brand-title">
-          LexiShield <span class="brand-tag">AI 3.0</span>
+          LexiShield <span class="brand-tag">AI Enterprise</span>
         </div>
       </div>
     </div>
 
-    <!-- 4-Step Guided Workflow Indicator -->
+    <!-- 4-Step Guided Workflow Stepper -->
     <nav class="workflow-stepper">
       <button class="step-btn active" id="stepBtn1" onclick="goToStep(1)">
-        <span class="step-num">1</span> Document
+        <span class="step-num">1</span> <span class="step-label">Upload / Scan</span>
       </button>
       <span class="step-divider">›</span>
       <button class="step-btn" id="stepBtn2" onclick="goToStep(2)">
-        <span class="step-num">2</span> Summary
+        <span class="step-num">2</span> <span class="step-label">Risk Audit</span>
       </button>
       <span class="step-divider">›</span>
       <button class="step-btn" id="stepBtn3" onclick="goToStep(3)">
-        <span class="step-num">3</span> Issues & Fixes
+        <span class="step-num">3</span> <span class="step-label">Workspace & Tools</span>
       </button>
       <span class="step-divider">›</span>
       <button class="step-btn" id="stepBtn4" onclick="goToStep(4)">
-        <span class="step-num">4</span> Report
+        <span class="step-num">4</span> <span class="step-label">Report & Export</span>
       </button>
     </nav>
 
     <div class="header-controls">
+      <!-- Multilingual Selector -->
+      <div class="header-select-group">
+        <label for="langSelect">🌐</label>
+        <select id="langSelect" onchange="changeLanguage()">
+          <option value="en" selected>English</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="ar">العربية (Arabic)</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+        </select>
+      </div>
+
+      <!-- Jurisdiction Selector -->
       <div class="jurisdiction-control">
-        <label for="jurisdictionSelect">Law System:</label>
+        <label for="jurisdictionSelect">Law:</label>
         <select id="jurisdictionSelect" onchange="changeJurisdiction()">
-          <option value="india" selected>🇮🇳 India (Contract Act 1872 & DPDP 2023)</option>
-          <option value="gdpr">🇪🇺 EU GDPR (Regulation 2016/679)</option>
-          <option value="uae">🇦🇪 UAE Laws (Decree Law 45/2021)</option>
+          <option value="india" selected>🇮🇳 India (Contract Act & DPDP 2023)</option>
+          <option value="gdpr">🇪🇺 EU GDPR (Reg 2016/679)</option>
+          <option value="uae">🇦🇪 UAE Legal Framework (Decree Law 45/2021 & Tax)</option>
         </select>
       </div>
 
       <div class="header-actions">
-        <a href="/api/export_report" target="_blank" class="btn btn-secondary">
-          📥 Export Report
+        <button class="btn btn-secondary btn-icon-only" onclick="openApiKeyModal()" title="Gemini API Key Settings">
+          🔑 <span class="key-status-dot" id="apiKeyStatusDot"></span>
+        </button>
+        <a href="/api/export_report" target="_blank" class="btn btn-secondary" id="exportNavBtn" onclick="handleExportClick(event)">
+          📥 Export
         </a>
         <button class="btn btn-primary" onclick="analyzeContract()">
-          ⚡ Review Contract
+          ⚡ Analyze
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Quiet Info Strip for Scope -->
+  <!-- Quiet Legal Disclaimer Banner -->
   <div class="disclaimer-strip" id="disclaimerStrip">
     <div class="disclaimer-content">
-      <span class="disclaimer-tag">SCOPING NOTICE</span>
-      <span>LexiShield AI helps non-lawyer business owners review contract terms and evidence. It does not replace a qualified attorney or guarantee court enforceability.</span>
+      <span class="disclaimer-tag">LEGAL COMPLIANCE NOTICE</span>
+      <span>LexiShield AI assists contract review, OCR extraction, and compliance assessments. It is not formal legal counsel or a guarantee of enforceability.</span>
     </div>
     <button class="disclaimer-dismiss" onclick="dismissDisclaimer()" title="Dismiss">✕</button>
   </div>
 
-  <!-- STEP 1 VIEW: Upload / Document Setup -->
+  <!-- ==================== STEP 1: UPLOAD / OCR / SETUP ==================== -->
   <section class="step-section active" id="sectionStep1">
     <div class="upload-hero-card">
       <div class="hero-icon">📄</div>
-      <h2>Review Your Agreement in Plain English</h2>
-      <p>Upload a contract or load a sample document to identify financial risks, data privacy issues, and recommended clause fixes.</p>
+      <h2 id="step1Title">AI-Powered Contract & Compliance Analysis</h2>
+      <p id="step1Sub">Analyze agreements, policies, and regulatory documents. Supports PDF, DOCX, Text, and Scanned Image OCR.</p>
 
-      <div class="upload-actions-bar">
-        <button class="btn btn-primary btn-lg" onclick="loadSampleContractAndAnalyze()">
-          🚀 Load & Analyze Sample SaaS Agreement
-        </button>
-        <label class="btn btn-secondary btn-lg">
-          Upload TXT/PDF <input type="file" id="contractFileInput" accept=".txt,.pdf" style="display:none;" onchange="handleFileUpload(event)">
-        </label>
+      <div class="upload-options-grid">
+        <!-- Option A: Standard Document Upload -->
+        <div class="upload-dropzone">
+          <div class="dropzone-icon">📁</div>
+          <h3>Upload Document</h3>
+          <p>PDF, TXT, or Word files</p>
+          <label class="btn btn-secondary">
+            Choose File <input type="file" id="contractFileInput" accept=".txt,.pdf,.docx" style="display:none;" onchange="handleFileUpload(event)">
+          </label>
+        </div>
+
+        <!-- Option B: Scanned Image OCR -->
+        <div class="upload-dropzone ocr-zone">
+          <div class="dropzone-icon">📷</div>
+          <h3>OCR Scan Document</h3>
+          <p>Scanned contract images or mobile photos (PNG, JPG)</p>
+          <label class="btn btn-primary">
+            Upload Image for OCR <input type="file" id="ocrFileInput" accept="image/*" style="display:none;" onchange="handleOcrUpload(event)">
+          </label>
+          <div id="ocrProgressBar" class="ocr-progress-container" style="display:none;">
+            <div class="ocr-progress-label" id="ocrStatusText">Processing OCR with Tesseract.js... 0%</div>
+            <div class="ocr-bar"><div class="ocr-fill" id="ocrProgressFill" style="width:0%;"></div></div>
+          </div>
+        </div>
+
+        <!-- Option C: Instant 1-Click Demo -->
+        <div class="upload-dropzone sample-zone">
+          <div class="dropzone-icon">⚡</div>
+          <h3>Quick Demo Agreement</h3>
+          <p>Pre-loaded Master SaaS Agreement with high-risk clauses</p>
+          <button class="btn btn-primary" onclick="loadSampleContractAndAnalyze()">
+            🚀 Load & Review Sample
+          </button>
+        </div>
       </div>
 
       <div class="file-status-box" id="step1FileStatus">
-        Ready to analyze: <strong>Sample Master SaaS Agreement</strong> (Words: ~350 • Clauses: 5)
+        Ready: <strong>Master SaaS Agreement</strong> (Words: ~350 • Clauses: 5 • Jurisdiction: India Law)
       </div>
     </div>
   </section>
 
-  <!-- STEP 2 VIEW: Executive Summary Overview -->
+  <!-- ==================== STEP 2: RISK & COMPLIANCE SUMMARY ==================== -->
   <section class="step-section" id="sectionStep2">
     <div class="summary-overview-card">
       <div class="overview-header">
         <div>
-          <span class="status-pill critical">High Potential Risk</span>
-          <h2 style="margin-top: 6px;">Executive Review Summary</h2>
+          <span class="status-pill critical" id="overviewPill">High Potential Risk</span>
+          <h2 style="margin-top: 6px;" id="overviewHeading">Executive Review & Compliance Assessment</h2>
           <p id="overviewDocSub">Master SaaS Agreement • Jurisdiction: India Law</p>
         </div>
         <div class="score-display">
-          <span class="score-num">8.7</span>
+          <span class="score-num" id="overviewScoreNum">8.7</span>
           <span class="score-denom">/ 10</span>
-          <a class="score-link" onclick="openMethodologyModal()">How is this calculated?</a>
+          <a class="score-link" onclick="openMethodologyModal()">Scoring Details</a>
         </div>
       </div>
 
@@ -113,41 +158,54 @@
         <div class="overview-box">
           <div class="box-label">Issues Found</div>
           <div class="box-val" id="summaryIssueCount">3 Issues (2 High Risk)</div>
-          <div class="box-desc">Requires revision before signing</div>
+          <div class="box-desc">Requires revision prior to signature</div>
         </div>
 
         <div class="overview-box">
-          <div class="box-label">Top Action Needed</div>
-          <div class="box-val">Revise Section 3.1 Liability</div>
-          <div class="box-desc">Replace uncapped indemnity with 12-month fee cap</div>
+          <div class="box-label">Missing Critical Clauses</div>
+          <div class="box-val" style="color: var(--risk-warning-text);" id="summaryMissingCount">2 Missing Clauses</div>
+          <div class="box-desc">No Force Majeure or Limitation of Liability</div>
         </div>
 
         <div class="overview-box">
-          <div class="box-label">Verification Status</div>
+          <div class="box-label">Compliance Status</div>
           <div class="box-val" style="color: var(--risk-safe-text);">● Grounded Evidence</div>
           <div class="box-desc">All findings cite verbatim contract quotes</div>
         </div>
       </div>
 
-      <div style="margin-top: 18px; text-align: right;">
+      <!-- Voice TTS Playback Bar -->
+      <div class="voice-summary-bar">
+        <div class="voice-info">
+          <span class="voice-icon">🔊</span>
+          <span>Listen to AI Audio Executive Briefing:</span>
+        </div>
+        <div class="voice-controls">
+          <button class="btn btn-sm btn-secondary" onclick="speakExecutiveSummary()">▶ Play Audio Summary</button>
+          <button class="btn btn-sm btn-ghost" onclick="stopAudio()">⏹ Stop</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn btn-ghost" onclick="goToStep(1)">← Back to Upload</button>
         <button class="btn btn-primary btn-lg" onclick="goToStep(3)">
-          Inspect Issues & Proposed Fixes →
+          Open Full Legal Workspace & Tools →
         </button>
       </div>
     </div>
   </section>
 
-  <!-- STEP 3 VIEW: Main Review & Fix Workspace -->
+  <!-- ==================== STEP 3: FULL LEGAL WORKSPACE & TOOLS ==================== -->
   <section class="step-section" id="sectionStep3">
 
-    <!-- Page Header Bar -->
+    <!-- Top Summary Toolbar -->
     <div class="summary-header">
       <div class="header-title-group">
         <h1>
-          Contract Issues & Proposed Fixes
+          Legal Workspace & Multi-Tool Suite
           <span class="doc-name-badge" id="docNameBadge">Master SaaS Agreement</span>
         </h1>
-        <p>Prioritized by risk severity. Click any issue to view supporting evidence and apply replacement wording.</p>
+        <p>Interactive clause analysis, contract generation, precedent research, and negotiation.</p>
       </div>
 
       <div class="summary-stats-bar">
@@ -158,78 +216,96 @@
           </span>
         </div>
         <div class="stat-metric">
-          <span class="stat-label">Issues Breakdown</span>
+          <span class="stat-label">Findings Breakdown</span>
           <span class="stat-value" id="findingsBreakdown">2 High Risk • 1 Medium Risk</span>
         </div>
       </div>
     </div>
 
-    <!-- Split Workspace -->
+    <!-- Main Workspace Split Grid -->
     <main class="app-workspace">
 
-      <!-- LEFT PANEL: Document Reader -->
+      <!-- LEFT PANEL: Document Reader / Editor -->
       <section class="workspace-panel">
         <div class="panel-header">
           <div class="panel-title">
-            📄 Document Text
+            📄 Contract Text Viewer
           </div>
           <div class="panel-controls">
+            <button class="btn btn-sm btn-secondary" onclick="speakSelectedText()" title="Listen to text">🔊 Read Aloud</button>
             <button class="btn btn-sm btn-secondary" onclick="loadSampleContract()">Reload Sample</button>
           </div>
         </div>
 
-        <!-- Search Bar -->
+        <!-- Search Bar with Live Highlight -->
         <div class="contract-search-wrapper">
-          <input type="text" id="contractSearchInput" class="contract-search-input" placeholder="🔍 Search text inside contract..." onkeyup="searchContractText()">
+          <input type="text" id="contractSearchInput" class="contract-search-input" placeholder="🔍 Search text within contract..." onkeyup="searchContractText()">
         </div>
 
         <div class="contract-document-wrapper">
-          <textarea id="contractText" class="contract-editor" placeholder="Paste contract text here..." oninput="updateWordCount()"></textarea>
+          <textarea id="contractText" class="contract-editor" placeholder="Contract text appears here..." oninput="updateWordCount()"></textarea>
         </div>
 
         <div class="panel-footer">
           <span id="wordCount">Words: 0</span>
           <span id="clauseCount">Detected Clauses: 5</span>
-          <span style="color: var(--primary); font-weight: 600;">Gemini 2.5 Active</span>
+          <span style="color: var(--primary); font-weight: 600;" id="aiEngineStatus">Gemini 2.5 Active</span>
         </div>
       </section>
 
-      <!-- RIGHT PANEL: Findings & Tools -->
+      <!-- RIGHT PANEL: Multi-Tab Intelligence Hub -->
       <section class="workspace-panel">
         
-        <!-- Navigation Tabs -->
+        <!-- Navigation Tabs (Covers all 6 Problem Statement areas!) -->
         <nav class="hub-navigation">
           <button class="nav-tab active" onclick="switchTab('tab-findings')">
-            🎯 Issues Found <span class="badge" id="riskBadgeCount">3</span>
+            🎯 Risk Audit <span class="badge" id="riskBadgeCount">3</span>
           </button>
           <button class="nav-tab" onclick="switchTab('tab-negotiation')">
-            🤝 Clause Fixes
+            🤝 Negotiation
+          </button>
+          <button class="nav-tab" onclick="switchTab('tab-generator')">
+            📜 Doc Generator
+          </button>
+          <button class="nav-tab" onclick="switchTab('tab-precedents')">
+            ⚖️ Case Law & Precedents
           </button>
           <button class="nav-tab" onclick="switchTab('tab-citations')">
-            📚 Relevant Laws
+            📚 Laws & Statutes
           </button>
           <button class="nav-tab" onclick="switchTab('tab-qa')">
-            💬 Legal Q&A Assistant
+            💬 Compliance Q&A
           </button>
         </nav>
 
-        <!-- TAB 1: Issues Found -->
+        <!-- TAB 1: Risk & Missing Clause Audit -->
         <div id="tab-findings" class="tab-view active">
+          <!-- Missing Clause Alert Box -->
+          <div class="missing-clause-banner" id="missingClauseBanner">
+            <div class="missing-clause-header">
+              <span>⚠️ Missing Essential Clauses Detected:</span>
+            </div>
+            <ul class="missing-clause-list">
+              <li><strong>Force Majeure Clause:</strong> No provision for unforeseen disruptions or epidemics.</li>
+              <li><strong>Mutual Liability Cap:</strong> Missing overall liability limit for indirect damages.</li>
+            </ul>
+          </div>
+
           <div class="filter-toolbar">
             <div class="filter-group">
-              <button class="filter-btn active" onclick="filterFindings('all')">All Issues (3)</button>
+              <button class="filter-btn active" onclick="filterFindings('all')">All (3)</button>
               <button class="filter-btn" onclick="filterFindings('critical')">High Risk (2)</button>
               <button class="filter-btn" onclick="filterFindings('warning')">Medium Risk (1)</button>
             </div>
-            <span style="font-size: 12px; color: var(--text-muted);">Click "Show in Document" to locate quote</span>
+            <span style="font-size: 11.5px; color: var(--text-muted);">Click "Show in Document" to locate quote</span>
           </div>
 
           <div class="findings-container" id="findingsContainer">
-            <!-- Dynamic Plain-English Finding Cards rendered by app.js -->
+            <!-- Rendered by app.js -->
           </div>
         </div>
 
-        <!-- TAB 2: Clause Fixes (Negotiation) -->
+        <!-- TAB 2: Clause Negotiation & Comparator -->
         <div id="tab-negotiation" class="tab-view">
           <div class="filter-toolbar">
             <div style="font-size: 13px; font-weight: 700;">Select Clause to Compare Fix Wording:</div>
@@ -245,10 +321,92 @@
           </div>
         </div>
 
-        <!-- TAB 3: Relevant Laws (Citations) -->
+        <!-- TAB 3: Smart Legal Document Generator -->
+        <div id="tab-generator" class="tab-view">
+          <div class="doc-gen-intro">
+            <h3>Smart Legal Document Generator</h3>
+            <p>Customize and generate production-ready NDAs, MOUs, SaaS Agreements, and Employment Contracts tailored to your selected jurisdiction.</p>
+          </div>
+
+          <div class="gen-form-grid">
+            <div class="gen-field">
+              <label>Document Template:</label>
+              <select id="genTemplateType" onchange="updateGeneratorFields()">
+                <option value="nda">Mutual Non-Disclosure Agreement (NDA)</option>
+                <option value="mou">Memorandum of Understanding (MOU)</option>
+                <option value="saas">SaaS Master Services Agreement (MSA)</option>
+                <option value="employment">Employment Agreement (Standard)</option>
+                <option value="dpa">GDPR/DPDP Data Processing Addendum (DPA)</option>
+              </select>
+            </div>
+
+            <div class="gen-field">
+              <label>Party A (First Party):</label>
+              <input type="text" id="genPartyA" value="Acme Technologies Inc.">
+            </div>
+
+            <div class="gen-field">
+              <label>Party B (Second Party):</label>
+              <input type="text" id="genPartyB" value="Global Business Solutions Pvt Ltd">
+            </div>
+
+            <div class="gen-field">
+              <label>Duration / Term:</label>
+              <input type="text" id="genDuration" value="2 Years">
+            </div>
+
+            <div class="gen-field">
+              <label>Governing Jurisdiction:</label>
+              <input type="text" id="genJurisdictionText" value="Republic of India">
+            </div>
+
+            <div class="gen-field">
+              <label>Liability Cap Limit:</label>
+              <input type="text" id="genLiabilityCap" value="Fees paid in preceding 12 months">
+            </div>
+          </div>
+
+          <div class="gen-action-row">
+            <button class="btn btn-primary" onclick="generateDocument()">
+              ✨ Generate Customized Legal Agreement
+            </button>
+            <button class="btn btn-secondary" onclick="loadGeneratedToEditor()">
+              📋 Load to Contract Reader
+            </button>
+            <button class="btn btn-secondary" onclick="copyGeneratedDoc()">
+              📋 Copy Agreement Text
+            </button>
+          </div>
+
+          <div class="gen-output-box">
+            <textarea id="genOutputText" readonly placeholder="Your generated contract template will appear here..."></textarea>
+          </div>
+        </div>
+
+        <!-- TAB 4: Case Law & Landmark Precedents -->
+        <div id="tab-precedents" class="tab-view">
+          <div class="precedent-search-box">
+            <input type="text" id="caseSearchInput" placeholder="🔍 Search landmark case laws (e.g. damages, data privacy, frustration)..." onkeyup="searchCaseLaws()">
+          </div>
+
+          <div class="dispute-arg-generator">
+            <h4>💡 AI Dispute Argument Generator</h4>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="disputeScenarioInput" placeholder="e.g. Counterparty claims vendor failure is excused by economic inflation...">
+              <button class="btn btn-primary btn-sm" onclick="generateLegalArgument()">Generate Argument</button>
+            </div>
+            <div id="disputeArgOutput" class="dispute-arg-result" style="display:none;"></div>
+          </div>
+
+          <div class="cases-list" id="caseLawsContainer">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- TAB 5: Relevant Laws & Citations -->
         <div id="tab-citations" class="tab-view">
           <div class="filter-toolbar">
-            <div style="font-size: 13px; font-weight: 700;">Relevant Laws & Statutory Authorities</div>
+            <div style="font-size: 13px; font-weight: 700;">Grounded Statutory Authorities & Official Gazettes</div>
           </div>
 
           <div class="citations-wrapper" id="citationsContainer">
@@ -256,18 +414,33 @@
           </div>
         </div>
 
-        <!-- TAB 4: Legal Q&A Assistant -->
+        <!-- TAB 6: Compliance Q&A Assistant -->
         <div id="tab-qa" class="tab-view">
+          <div class="qa-domain-bar">
+            <span style="font-size: 11.5px; font-weight:700; color:var(--text-muted);">Focus Domain:</span>
+            <select id="qaDomainSelect" style="font-size: 12px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-color);">
+              <option value="contract">Commercial Contract Law</option>
+              <option value="corporate">Corporate & Business Licensing</option>
+              <option value="labor">Labor & Employment Law</option>
+              <option value="privacy">Data Privacy & GDPR / DPDP</option>
+              <option value="tax">Taxation & UAE Corporate Tax</option>
+              <option value="ip">Intellectual Property (IP)</option>
+            </select>
+          </div>
+
           <div class="qa-container">
             <div class="chat-box" id="chatHistory">
               <div class="chat-bubble bot">
-                <strong>LexiShield Legal Assistant</strong>
-                <p style="margin-top: 4px;">Ask any question in everyday English about this contract. Answers are grounded in contract quotes and <span id="qaJurisdictionLabel">India Law</span>.</p>
+                <strong>LexiShield Legal & Compliance Assistant</strong>
+                <p style="margin-top: 4px;">Ask questions regarding contract terms, regulatory obligations, or business compliance. Powered by Gemini & Primary Legal Codifications.</p>
               </div>
             </div>
             <div class="qa-input-bar">
-              <input type="text" id="qaInput" placeholder="e.g. Can the vendor shut down my access without notice?" onkeydown="handleQaKey(event)">
-              <button class="btn btn-primary" onclick="sendQaQuestion()">Ask Question</button>
+              <button class="btn btn-secondary btn-icon-only" id="voiceInputBtn" onclick="toggleSpeechRecognition()" title="Voice Input (Speech-to-Text)">
+                🎤
+              </button>
+              <input type="text" id="qaInput" placeholder="Ask legal/compliance question..." onkeydown="handleQaKey(event)">
+              <button class="btn btn-primary" onclick="sendQaQuestion()">Ask</button>
             </div>
           </div>
         </div>
@@ -277,29 +450,101 @@
     </main>
   </section>
 
-  <!-- STEP 4 VIEW: Final Summary & Report Export -->
+  <!-- ==================== STEP 4: REPORT & EXPORT ==================== -->
   <section class="step-section" id="sectionStep4">
     <div class="report-section-card">
-      <h2>Contract Review Summary & Export</h2>
-      <p>Download or share your plain-English review report containing executive findings, evidence quotes, and recommended clause replacements.</p>
+      <h2>Executive Contract & Compliance Audit Report</h2>
+      <p>Download or share your structured audit containing executive findings, evidence quotes, risk calculations, and replacement clause redlines.</p>
 
       <div class="report-preview-box">
         <pre id="reportPreviewText">Loading Executive Report Preview...</pre>
       </div>
 
       <div class="report-actions-row">
-        <a href="/api/export_report" target="_blank" class="btn btn-primary btn-lg">
+        <a href="/api/export_report" target="_blank" class="btn btn-primary btn-lg" onclick="handleExportClick(event)">
           📥 Download Full Text Report (.txt)
         </a>
+        <button class="btn btn-secondary btn-lg" onclick="printReport()">
+          🖨️ Print / Save as PDF
+        </button>
         <button class="btn btn-secondary btn-lg" onclick="openBenchmarkModal()">
-          📈 View Accuracy Benchmark Data
+          📈 View Accuracy Benchmarks
         </button>
         <button class="btn btn-ghost btn-lg" onclick="goToStep(3)">
-          ← Return to Interactive Workspace
+          ← Return to Workspace
         </button>
       </div>
     </div>
   </section>
+
+  <!-- ==================== INTELLIGENT FLOATING ACTION BUTTON (FAB) ==================== -->
+  <div class="legal-fab-container">
+    <button class="legal-fab-btn" id="legalFabBtn" onclick="toggleFabChat()" title="Open LexiBot Compliance Advisor">
+      <span class="fab-badge">AI</span>
+      <span class="fab-icon">⚖️</span>
+      <span class="fab-pulse"></span>
+    </button>
+  </div>
+
+  <!-- FLOATING INTELLIGENCE DRAWER / CHAT WINDOW -->
+  <div class="floating-chat-drawer" id="floatingChatDrawer">
+    <div class="fab-chat-header">
+      <div class="fab-chat-title">
+        <span class="fab-chat-avatar">⚖️</span>
+        <div>
+          <strong>LexiBot Intelligence Assistant</strong>
+          <span class="fab-status-text">● Multi-Domain Compliance Ready</span>
+        </div>
+      </div>
+      <button class="fab-chat-close" onclick="toggleFabChat()">✕</button>
+    </div>
+
+    <!-- Quick Prompt Pills -->
+    <div class="fab-quick-prompts">
+      <button class="prompt-pill" onclick="sendQuickPrompt('What are the top 3 financial risks in this agreement?')">Top Financial Risks</button>
+      <button class="prompt-pill" onclick="sendQuickPrompt('Is this agreement compliant with India DPDP Act 2023?')">DPDP Compliance Check</button>
+      <button class="prompt-pill" onclick="sendQuickPrompt('What clauses are missing from this contract?')">Missing Clauses</button>
+    </div>
+
+    <!-- Chat Messages Container -->
+    <div class="fab-chat-messages" id="fabChatMessages">
+      <div class="chat-bubble bot">
+        <strong>LexiBot Compliance Assistant</strong>
+        <p style="margin-top: 3px;">Hello! I can explain your contract, verify compliance across India, GDPR, or UAE frameworks, or help draft missing protective terms. How can I assist?</p>
+      </div>
+    </div>
+
+    <!-- Chat Input with Voice -->
+    <div class="fab-chat-input-bar">
+      <button class="btn btn-sm btn-secondary" id="fabVoiceBtn" onclick="toggleFabSpeechRecognition()" title="Voice Dictation">
+        🎤
+      </button>
+      <input type="text" id="fabChatInput" placeholder="Ask anything about legal compliance..." onkeydown="handleFabKey(event)">
+      <button class="btn btn-sm btn-primary" onclick="sendFabMessage()">Send</button>
+    </div>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+  <!-- API Key Settings Modal -->
+  <div class="modal-backdrop" id="apiKeyModal">
+    <div class="modal-content">
+      <div class="modal-title-row">
+        <h2>🔑 Gemini API Key Configuration</h2>
+        <button class="modal-close-btn" onclick="closeApiKeyModal()">✕</button>
+      </div>
+      <div style="font-size: 13px; color: var(--text-secondary); margin: 12px 0; line-height: 1.5;">
+        <p>To enable live generative analysis directly through Google Gemini 2.5, paste your Google AI Studio API key below. It will be stored securely in your browser's local storage.</p>
+        <p style="margin-top: 6px; color: var(--text-muted); font-size: 12px;">Don't have a key? LexiShield AI's deterministic legal rule engine is active by default with zero errors!</p>
+      </div>
+      <div style="margin: 14px 0;">
+        <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." style="width:100%; padding:9px 12px; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-mono); font-size:13px;">
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn btn-primary" onclick="saveApiKey()">Save API Key</button>
+        <button class="btn btn-ghost" onclick="clearApiKey()">Clear Saved Key</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Benchmark Modal -->
   <div class="modal-backdrop" id="benchmarkModal">
@@ -321,7 +566,7 @@
         </div>
         <div class="metric-card">
           <div class="metric-number">3.1s</div>
-          <div class="metric-desc">Avg Gemini Inference Time</div>
+          <div class="metric-desc">Avg Inference Time</div>
         </div>
         <div class="metric-card">
           <div class="metric-number">0.91</div>

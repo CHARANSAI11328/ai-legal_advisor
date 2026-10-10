@@ -33,8 +33,9 @@ MANIFEST
 .env.local
 .env.*.local
 
-# IDE & Editor files
-.vscode/
+# Office temporary lock files
+~$*
+*.tmp
 .idea/
 *.swp
 *.swo
