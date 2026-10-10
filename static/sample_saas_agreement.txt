@@ -1,0 +1,20 @@
+MASTER SAAS & PROFESSIONAL SERVICES AGREEMENT
+
+This Master Services Agreement ("Agreement") is entered into as of October 10, 2026 ("Effective Date"), by and between CloudMatrix Solutions Private Limited ("Vendor"), having its principal place of business at Cyber City, Gurugram, India, and Global Enterprise Corp ("Client").
+
+1. SERVICES AND ACCESSIBILITY
+Vendor shall provide Client access to its Cloud Enterprise Platform subject to the terms hereof. Vendor warrants 99.0% uptime, excluding planned maintenance.
+
+2. FEES AND PAYMENT
+Client shall pay all fees within 15 days of invoice date. Overdue amounts shall accrue interest at the rate of 24% per annum compounded monthly.
+
+3. INDEMNIFICATION AND LIABILITY (CRITICAL CLAUSE)
+Section 3.1: Client shall indemnify, defend, and hold harmless Vendor, its affiliates, directors, and employees against any and all losses, damages, liabilities, costs, and expenses (including full legal fees) arising out of or related to any breach, third-party claim, or system downtime, regardless of fault or negligence, without limitation.
+Section 3.2: Vendor's aggregate total liability for any claims arising under or related to this Agreement shall be limited to $50.00 USD.
+
+4. INTELLECTUAL PROPERTY AND DATA PRIVACY
+Section 4.1: Vendor retains all rights, title, and interest in all Client data processed through the platform. Client hereby grants Vendor an irrevocable, perpetual, royalty-free, worldwide license to retain, modify, monetize, and share all uploaded customer personal data with third-party aggregators.
+Section 4.2: Client agrees that Vendor has no obligation to comply with data deletion requests or cross-border transfer restrictions under local privacy laws.
+
+5. GOVERNING LAW AND DISPUTE RESOLUTION
+This Agreement shall be governed by and construed in accordance with the laws of India. Any dispute arising out of or in connection with this contract shall be submitted to exclusive binding arbitration in London, UK under LCIA Rules, with Client bearing all costs regardless of outcome.

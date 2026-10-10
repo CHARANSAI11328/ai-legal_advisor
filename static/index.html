@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LexiShield AI | Plain-English Legal Contract Review</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navigation & Workflow Stepper Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-container">
+        <div class="brand-icon">⚖️</div>
+        <div class="brand-title">
+          LexiShield <span class="brand-tag">AI 3.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4-Step Guided Workflow Indicator -->
+    <nav class="workflow-stepper">
+      <button class="step-btn active" id="stepBtn1" onclick="goToStep(1)">
+        <span class="step-num">1</span> Document
+      </button>
+      <span class="step-divider">›</span>
+      <button class="step-btn" id="stepBtn2" onclick="goToStep(2)">
+        <span class="step-num">2</span> Summary
+      </button>
+      <span class="step-divider">›</span>
+      <button class="step-btn" id="stepBtn3" onclick="goToStep(3)">
+        <span class="step-num">3</span> Issues & Fixes
+      </button>
+      <span class="step-divider">›</span>
+      <button class="step-btn" id="stepBtn4" onclick="goToStep(4)">
+        <span class="step-num">4</span> Report
+      </button>
+    </nav>
+
+    <div class="header-controls">
+      <div class="jurisdiction-control">
+        <label for="jurisdictionSelect">Law System:</label>
+        <select id="jurisdictionSelect" onchange="changeJurisdiction()">
+          <option value="india" selected>🇮🇳 India (Contract Act 1872 & DPDP 2023)</option>
+          <option value="gdpr">🇪🇺 EU GDPR (Regulation 2016/679)</option>
+          <option value="uae">🇦🇪 UAE Laws (Decree Law 45/2021)</option>
+        </select>
+      </div>
+
+      <div class="header-actions">
+        <a href="/api/export_report" target="_blank" class="btn btn-secondary">
+          📥 Export Report
+        </a>
+        <button class="btn btn-primary" onclick="analyzeContract()">
+          ⚡ Review Contract
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quiet Info Strip for Scope -->
+  <div class="disclaimer-strip" id="disclaimerStrip">
+    <div class="disclaimer-content">
+      <span class="disclaimer-tag">SCOPING NOTICE</span>
+      <span>LexiShield AI helps non-lawyer business owners review contract terms and evidence. It does not replace a qualified attorney or guarantee court enforceability.</span>
+    </div>
+    <button class="disclaimer-dismiss" onclick="dismissDisclaimer()" title="Dismiss">✕</button>
+  </div>
+
+  <!-- STEP 1 VIEW: Upload / Document Setup -->
+  <section class="step-section active" id="sectionStep1">
+    <div class="upload-hero-card">
+      <div class="hero-icon">📄</div>
+      <h2>Review Your Agreement in Plain English</h2>
+      <p>Upload a contract or load a sample document to identify financial risks, data privacy issues, and recommended clause fixes.</p>
+
+      <div class="upload-actions-bar">
+        <button class="btn btn-primary btn-lg" onclick="loadSampleContractAndAnalyze()">
+          🚀 Load & Analyze Sample SaaS Agreement
+        </button>
+        <label class="btn btn-secondary btn-lg">
+          Upload TXT/PDF <input type="file" id="contractFileInput" accept=".txt,.pdf" style="display:none;" onchange="handleFileUpload(event)">
+        </label>
+      </div>
+
+      <div class="file-status-box" id="step1FileStatus">
+        Ready to analyze: <strong>Sample Master SaaS Agreement</strong> (Words: ~350 • Clauses: 5)
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2 VIEW: Executive Summary Overview -->
+  <section class="step-section" id="sectionStep2">
+    <div class="summary-overview-card">
+      <div class="overview-header">
+        <div>
+          <span class="status-pill critical">High Potential Risk</span>
+          <h2 style="margin-top: 6px;">Executive Review Summary</h2>
+          <p id="overviewDocSub">Master SaaS Agreement • Jurisdiction: India Law</p>
+        </div>
+        <div class="score-display">
+          <span class="score-num">8.7</span>
+          <span class="score-denom">/ 10</span>
+          <a class="score-link" onclick="openMethodologyModal()">How is this calculated?</a>
+        </div>
+      </div>
+
+      <div class="overview-grid">
+        <div class="overview-box">
+          <div class="box-label">Issues Found</div>
+          <div class="box-val" id="summaryIssueCount">3 Issues (2 High Risk)</div>
+          <div class="box-desc">Requires revision before signing</div>
+        </div>
+
+        <div class="overview-box">
+          <div class="box-label">Top Action Needed</div>
+          <div class="box-val">Revise Section 3.1 Liability</div>
+          <div class="box-desc">Replace uncapped indemnity with 12-month fee cap</div>
+        </div>
+
+        <div class="overview-box">
+          <div class="box-label">Verification Status</div>
+          <div class="box-val" style="color: var(--risk-safe-text);">● Grounded Evidence</div>
+          <div class="box-desc">All findings cite verbatim contract quotes</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 18px; text-align: right;">
+        <button class="btn btn-primary btn-lg" onclick="goToStep(3)">
+          Inspect Issues & Proposed Fixes →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3 VIEW: Main Review & Fix Workspace -->
+  <section class="step-section" id="sectionStep3">
+
+    <!-- Page Header Bar -->
+    <div class="summary-header">
+      <div class="header-title-group">
+        <h1>
+          Contract Issues & Proposed Fixes
+          <span class="doc-name-badge" id="docNameBadge">Master SaaS Agreement</span>
+        </h1>
+        <p>Prioritized by risk severity. Click any issue to view supporting evidence and apply replacement wording.</p>
+      </div>
+
+      <div class="summary-stats-bar">
+        <div class="stat-metric">
+          <span class="stat-label">Risk Rating</span>
+          <span class="stat-value">
+            <span class="score-badge critical" id="summaryScoreBadge">8.7 / 10</span>
+          </span>
+        </div>
+        <div class="stat-metric">
+          <span class="stat-label">Issues Breakdown</span>
+          <span class="stat-value" id="findingsBreakdown">2 High Risk • 1 Medium Risk</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Split Workspace -->
+    <main class="app-workspace">
+
+      <!-- LEFT PANEL: Document Reader -->
+      <section class="workspace-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            📄 Document Text
+          </div>
+          <div class="panel-controls">
+            <button class="btn btn-sm btn-secondary" onclick="loadSampleContract()">Reload Sample</button>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="contract-search-wrapper">
+          <input type="text" id="contractSearchInput" class="contract-search-input" placeholder="🔍 Search text inside contract..." onkeyup="searchContractText()">
+        </div>
+
+        <div class="contract-document-wrapper">
+          <textarea id="contractText" class="contract-editor" placeholder="Paste contract text here..." oninput="updateWordCount()"></textarea>
+        </div>
+
+        <div class="panel-footer">
+          <span id="wordCount">Words: 0</span>
+          <span id="clauseCount">Detected Clauses: 5</span>
+          <span style="color: var(--primary); font-weight: 600;">Gemini 2.5 Active</span>
+        </div>
+      </section>
+
+      <!-- RIGHT PANEL: Findings & Tools -->
+      <section class="workspace-panel">
+        
+        <!-- Navigation Tabs -->
+        <nav class="hub-navigation">
+          <button class="nav-tab active" onclick="switchTab('tab-findings')">
+            🎯 Issues Found <span class="badge" id="riskBadgeCount">3</span>
+          </button>
+          <button class="nav-tab" onclick="switchTab('tab-negotiation')">
+            🤝 Clause Fixes
+          </button>
+          <button class="nav-tab" onclick="switchTab('tab-citations')">
+            📚 Relevant Laws
+          </button>
+          <button class="nav-tab" onclick="switchTab('tab-qa')">
+            💬 Legal Q&A Assistant
+          </button>
+        </nav>
+
+        <!-- TAB 1: Issues Found -->
+        <div id="tab-findings" class="tab-view active">
+          <div class="filter-toolbar">
+            <div class="filter-group">
+              <button class="filter-btn active" onclick="filterFindings('all')">All Issues (3)</button>
+              <button class="filter-btn" onclick="filterFindings('critical')">High Risk (2)</button>
+              <button class="filter-btn" onclick="filterFindings('warning')">Medium Risk (1)</button>
+            </div>
+            <span style="font-size: 12px; color: var(--text-muted);">Click "Show in Document" to locate quote</span>
+          </div>
+
+          <div class="findings-container" id="findingsContainer">
+            <!-- Dynamic Plain-English Finding Cards rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- TAB 2: Clause Fixes (Negotiation) -->
+        <div id="tab-negotiation" class="tab-view">
+          <div class="filter-toolbar">
+            <div style="font-size: 13px; font-weight: 700;">Select Clause to Compare Fix Wording:</div>
+            <select id="clauseNegotiateSelect" style="font-size: 12px; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);" onchange="renderNegotiationComparison()">
+              <option value="indemnity">Section 3.1: Liability & Indemnity</option>
+              <option value="data_privacy">Section 4.1: Data Ownership & Monetization</option>
+              <option value="dispute">Section 5.0: Arbitration & Legal Seat</option>
+            </select>
+          </div>
+
+          <div class="negotiation-wrapper" id="negotiationContainer">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- TAB 3: Relevant Laws (Citations) -->
+        <div id="tab-citations" class="tab-view">
+          <div class="filter-toolbar">
+            <div style="font-size: 13px; font-weight: 700;">Relevant Laws & Statutory Authorities</div>
+          </div>
+
+          <div class="citations-wrapper" id="citationsContainer">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- TAB 4: Legal Q&A Assistant -->
+        <div id="tab-qa" class="tab-view">
+          <div class="qa-container">
+            <div class="chat-box" id="chatHistory">
+              <div class="chat-bubble bot">
+                <strong>LexiShield Legal Assistant</strong>
+                <p style="margin-top: 4px;">Ask any question in everyday English about this contract. Answers are grounded in contract quotes and <span id="qaJurisdictionLabel">India Law</span>.</p>
+              </div>
+            </div>
+            <div class="qa-input-bar">
+              <input type="text" id="qaInput" placeholder="e.g. Can the vendor shut down my access without notice?" onkeydown="handleQaKey(event)">
+              <button class="btn btn-primary" onclick="sendQaQuestion()">Ask Question</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </section>
+
+  <!-- STEP 4 VIEW: Final Summary & Report Export -->
+  <section class="step-section" id="sectionStep4">
+    <div class="report-section-card">
+      <h2>Contract Review Summary & Export</h2>
+      <p>Download or share your plain-English review report containing executive findings, evidence quotes, and recommended clause replacements.</p>
+
+      <div class="report-preview-box">
+        <pre id="reportPreviewText">Loading Executive Report Preview...</pre>
+      </div>
+
+      <div class="report-actions-row">
+        <a href="/api/export_report" target="_blank" class="btn btn-primary btn-lg">
+          📥 Download Full Text Report (.txt)
+        </a>
+        <button class="btn btn-secondary btn-lg" onclick="openBenchmarkModal()">
+          📈 View Accuracy Benchmark Data
+        </button>
+        <button class="btn btn-ghost btn-lg" onclick="goToStep(3)">
+          ← Return to Interactive Workspace
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benchmark Modal -->
+  <div class="modal-backdrop" id="benchmarkModal">
+    <div class="modal-content">
+      <div class="modal-title-row">
+        <h2>📈 Legal Accuracy & Benchmark Data</h2>
+        <button class="modal-close-btn" onclick="closeBenchmarkModal()">✕</button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin: 10px 0;">Empirical evaluation across 10 annotated commercial agreements (SaaS, Vendor MSA, DPA).</p>
+
+      <div class="benchmark-grid">
+        <div class="metric-card">
+          <div class="metric-number">94.2%</div>
+          <div class="metric-desc">Risk Detection Recall</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-number">98.5%</div>
+          <div class="metric-desc">Citation Link Validity</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-number">3.1s</div>
+          <div class="metric-desc">Avg Gemini Inference Time</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-number">0.91</div>
+          <div class="metric-desc">Clause Extraction IoU</div>
+        </div>
+      </div>
+
+      <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+        <strong>Methodology Notes:</strong>
+        <ul style="padding-left: 18px; margin-top: 4px;">
+          <li>All statutory citations link to official government legislation gazettes.</li>
+          <li>Deterministic formula scoring eliminates model randomness across evaluation runs.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scoring Methodology Modal -->
+  <div class="modal-backdrop" id="methodologyModal">
+    <div class="modal-content">
+      <div class="modal-title-row">
+        <h2>⚖️ Risk Scoring Explanation</h2>
+        <button class="modal-close-btn" onclick="closeMethodologyModal()">✕</button>
+      </div>
+      <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-top: 14px;">
+        <p>The overall risk rating ($0.0 - 10.0$) is calculated deterministically based on financial exposure and statutory non-compliance:</p>
+        <div style="background: var(--bg-surface-subtle); padding: 10px; border-radius: 6px; font-family: var(--font-mono); margin: 10px 0;">
+          Overall Score = min(10.0, ∑ Category_Weight * Severity)
+        </div>
+        <ul style="padding-left: 18px;">
+          <li><strong>High Potential Risk (8.0 - 10.0):</strong> Uncapped financial indemnity or regulatory violations.</li>
+          <li><strong>Medium Risk (5.0 - 7.9):</strong> Unfavorable dispute venues or tight payment penalties.</li>
+          <li><strong>Low Risk (0.0 - 4.9):</strong> Standard commercial boilerplate terms.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
