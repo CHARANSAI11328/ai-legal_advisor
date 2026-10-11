@@ -20,7 +20,9 @@
   <header class="app-header">
     <div class="header-left">
       <div class="brand-container">
-        <div class="brand-icon">⚖️</div>
+        <div class="brand-icon" aria-hidden="true">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+        </div>
         <div class="brand-title">
           LexiShield <span class="brand-tag">AI Enterprise</span>
         </div>
@@ -28,19 +30,19 @@
     </div>
 
     <!-- 4-Step Guided Workflow Stepper -->
-    <nav class="workflow-stepper">
+    <nav class="workflow-stepper" aria-label="Workflow Steps">
       <button class="step-btn active" id="stepBtn1" onclick="goToStep(1)">
         <span class="step-num">1</span> <span class="step-label">Upload / Scan</span>
       </button>
-      <span class="step-divider">›</span>
+      <span class="step-divider" aria-hidden="true">›</span>
       <button class="step-btn" id="stepBtn2" onclick="goToStep(2)">
         <span class="step-num">2</span> <span class="step-label">Risk Audit</span>
       </button>
-      <span class="step-divider">›</span>
+      <span class="step-divider" aria-hidden="true">›</span>
       <button class="step-btn" id="stepBtn3" onclick="goToStep(3)">
         <span class="step-num">3</span> <span class="step-label">Workspace & Tools</span>
       </button>
-      <span class="step-divider">›</span>
+      <span class="step-divider" aria-hidden="true">›</span>
       <button class="step-btn" id="stepBtn4" onclick="goToStep(4)">
         <span class="step-num">4</span> <span class="step-label">Report & Export</span>
       </button>
@@ -49,7 +51,9 @@
     <div class="header-controls">
       <!-- Multilingual Selector -->
       <div class="header-select-group">
-        <label for="langSelect">🌐</label>
+        <label for="langSelect" title="Interface Language" aria-label="Interface Language">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </label>
         <select id="langSelect" onchange="changeLanguage()">
           <option value="en" selected>English</option>
           <option value="hi">हिन्दी (Hindi)</option>
@@ -70,14 +74,17 @@
       </div>
 
       <div class="header-actions">
-        <button class="btn btn-secondary btn-icon-only" onclick="openApiKeyModal()" title="Gemini API Key Settings">
-          🔑 <span class="key-status-dot" id="apiKeyStatusDot"></span>
+        <button class="btn btn-secondary btn-icon-only" onclick="openApiKeyModal()" title="Gemini API Key Settings" aria-label="Gemini API Key Settings">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          <span class="key-status-dot" id="apiKeyStatusDot"></span>
         </button>
         <a href="/api/export_report" target="_blank" class="btn btn-secondary" id="exportNavBtn" onclick="handleExportClick(event)">
-          📥 Export
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
         </a>
         <button class="btn btn-primary" onclick="analyzeContract()">
-          ⚡ Analyze
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Analyze
         </button>
       </div>
     </div>
@@ -86,23 +93,29 @@
   <!-- Quiet Legal Disclaimer Banner -->
   <div class="disclaimer-strip" id="disclaimerStrip">
     <div class="disclaimer-content">
-      <span class="disclaimer-tag">LEGAL COMPLIANCE NOTICE</span>
+      <span class="disclaimer-tag">Legal Compliance Notice</span>
       <span>LexiShield AI assists contract review, OCR extraction, and compliance assessments. It is not formal legal counsel or a guarantee of enforceability.</span>
     </div>
-    <button class="disclaimer-dismiss" onclick="dismissDisclaimer()" title="Dismiss">✕</button>
+    <button class="disclaimer-dismiss" onclick="dismissDisclaimer()" title="Dismiss disclaimer" aria-label="Dismiss disclaimer">
+      <svg class="icon-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
   </div>
 
   <!-- ==================== STEP 1: UPLOAD / OCR / SETUP ==================== -->
   <section class="step-section active" id="sectionStep1">
     <div class="upload-hero-card">
-      <div class="hero-icon">📄</div>
+      <div class="hero-icon" aria-hidden="true">
+        <svg class="icon-svg-xl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+      </div>
       <h2 id="step1Title">AI-Powered Contract & Compliance Analysis</h2>
       <p id="step1Sub">Analyze agreements, policies, and regulatory documents. Supports PDF, DOCX, Text, and Scanned Image OCR.</p>
 
       <div class="upload-options-grid">
         <!-- Option A: Standard Document Upload -->
         <div class="upload-dropzone">
-          <div class="dropzone-icon">📁</div>
+          <div class="dropzone-icon" aria-hidden="true">
+            <svg class="icon-svg-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
           <h3>Upload Document</h3>
           <p>PDF, TXT, or Word files</p>
           <label class="btn btn-secondary">
@@ -112,7 +125,9 @@
 
         <!-- Option B: Scanned Image OCR -->
         <div class="upload-dropzone ocr-zone">
-          <div class="dropzone-icon">📷</div>
+          <div class="dropzone-icon" aria-hidden="true">
+            <svg class="icon-svg-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
           <h3>OCR Scan Document</h3>
           <p>Scanned contract images or mobile photos (PNG, JPG)</p>
           <label class="btn btn-primary">
@@ -126,11 +141,14 @@
 
         <!-- Option C: Instant 1-Click Demo -->
         <div class="upload-dropzone sample-zone">
-          <div class="dropzone-icon">⚡</div>
+          <div class="dropzone-icon" aria-hidden="true">
+            <svg class="icon-svg-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
           <h3>Quick Demo Agreement</h3>
           <p>Pre-loaded Master SaaS Agreement with high-risk clauses</p>
           <button class="btn btn-primary" onclick="loadSampleContractAndAnalyze()">
-            🚀 Load & Review Sample
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Load & Review Sample
           </button>
         </div>
       </div>
@@ -146,8 +164,11 @@
     <div class="summary-overview-card">
       <div class="overview-header">
         <div>
-          <span class="status-pill critical" id="overviewPill">High Potential Risk</span>
-          <h2 style="margin-top: 6px;" id="overviewHeading">Executive Review & Compliance Assessment</h2>
+          <span class="status-pill critical" id="overviewPill">
+            <svg class="icon-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            High Potential Risk
+          </span>
+          <h2 id="overviewHeading">Executive Review & Compliance Assessment</h2>
           <p id="overviewDocSub">Master SaaS Agreement • Jurisdiction: India Law</p>
         </div>
         <div class="score-display">
@@ -172,7 +193,10 @@
 
         <div class="overview-box">
           <div class="box-label">Compliance Status</div>
-          <div class="box-val" style="color: var(--risk-safe-text);">● Grounded Evidence</div>
+          <div class="box-val" style="color: var(--risk-safe-text);">
+            <svg class="icon-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Grounded Evidence
+          </div>
           <div class="box-desc">All findings cite verbatim contract quotes</div>
         </div>
       </div>
@@ -180,19 +204,31 @@
       <!-- Voice TTS Playback Bar -->
       <div class="voice-summary-bar">
         <div class="voice-info">
-          <span class="voice-icon">🔊</span>
+          <span class="voice-icon" aria-hidden="true">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </span>
           <span>Listen to AI Audio Executive Briefing:</span>
         </div>
         <div class="voice-controls">
-          <button class="btn btn-sm btn-secondary" onclick="speakExecutiveSummary()">▶ Play Audio Summary</button>
-          <button class="btn btn-sm btn-ghost" onclick="stopAudio()">⏹ Stop</button>
+          <button class="btn btn-sm btn-secondary" onclick="speakExecutiveSummary()">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Play Audio Summary
+          </button>
+          <button class="btn btn-sm btn-ghost" onclick="stopAudio()">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+            Stop
+          </button>
         </div>
       </div>
 
-      <div style="margin-top: 20px; display:flex; justify-content:space-between; align-items:center;">
-        <button class="btn btn-ghost" onclick="goToStep(1)">← Back to Upload</button>
+      <div style="margin-top: 24px; display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn btn-ghost" onclick="goToStep(1)">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to Upload
+        </button>
         <button class="btn btn-primary btn-lg" onclick="goToStep(3)">
-          Open Full Legal Workspace & Tools →
+          Open Full Legal Workspace & Tools
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
     </div>
@@ -232,52 +268,68 @@
       <section class="workspace-panel">
         <div class="panel-header">
           <div class="panel-title">
-            📄 Contract Text Viewer
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Contract Dossier & Editor
           </div>
           <div class="panel-controls">
-            <button class="btn btn-sm btn-secondary" onclick="speakSelectedText()" title="Listen to text">🔊 Read Aloud</button>
-            <button class="btn btn-sm btn-secondary" onclick="loadSampleContract()">Reload Sample</button>
+            <button class="btn btn-sm btn-secondary" onclick="speakSelectedText()" title="Listen to selected text">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              Read Aloud
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="loadSampleContract()">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              Reload Sample
+            </button>
           </div>
         </div>
 
         <!-- Search Bar with Live Highlight -->
         <div class="contract-search-wrapper">
-          <input type="text" id="contractSearchInput" class="contract-search-input" placeholder="🔍 Search text within contract..." onkeyup="searchContractText()">
+          <input type="text" id="contractSearchInput" class="contract-search-input" placeholder="Search text within contract..." onkeyup="searchContractText()">
         </div>
 
         <div class="contract-document-wrapper">
-          <textarea id="contractText" class="contract-editor" placeholder="Paste or upload any legal contract or agreement text here to analyze..." oninput="onContractTextChanged()"></textarea>
+          <textarea id="contractText" class="contract-editor" placeholder="Paste or upload any legal contract or agreement text here to analyze..." oninput="onContractTextChanged()" spellcheck="false"></textarea>
         </div>
 
         <div class="panel-footer">
           <span id="wordCount">Words: 0</span>
           <span id="clauseCount">Detected Clauses: 0</span>
-          <span style="color: var(--primary); font-weight: 600;" id="aiEngineStatus">Legal Intelligence Active</span>
+          <span style="color: var(--primary); font-weight: 600; display: inline-flex; align-items: center; gap: 5px;" id="aiEngineStatus">
+            <svg class="icon-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Legal Intelligence Active
+          </span>
         </div>
       </section>
 
       <!-- RIGHT PANEL: Multi-Tab Intelligence Hub -->
       <section class="workspace-panel">
         
-        <!-- Navigation Tabs (Covers all 6 Problem Statement areas!) -->
-        <nav class="hub-navigation">
+        <!-- Navigation Tabs -->
+        <nav class="hub-navigation" aria-label="Intelligence Hub Tabs">
           <button class="nav-tab active" onclick="switchTab('tab-findings')">
-            🎯 Risk Audit <span class="badge" id="riskBadgeCount">3</span>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+            Risk Audit <span class="badge" id="riskBadgeCount">3</span>
           </button>
           <button class="nav-tab" onclick="switchTab('tab-negotiation')">
-            🤝 Negotiation
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 0 0 1.4 0l4.3-4.3a1 1 0 0 0 0-1.4l-2.6-2.6a1 1 0 0 0-1.4 0L13 12.4"/><path d="m3 11 2.6-2.6a1 1 0 0 1 1.4 0l2.6 2.6a1 1 0 0 1 0 1.4L5.3 16.7a1 1 0 0 1-1.4 0L2 14.8a1 1 0 0 1 0-1.4l1-1z"/><path d="m13 7.1 1.6-1.6a2 2 0 0 1 2.8 0l1.1 1.1a2 2 0 0 1 0 2.8l-1.6 1.6"/><path d="m8.9 11.2-1.6 1.6a2 2 0 0 0 0 2.8l1.1 1.1a2 2 0 0 0 2.8 0l1.6-1.6"/></svg>
+            Negotiation
           </button>
           <button class="nav-tab" onclick="switchTab('tab-generator')">
-            📜 Doc Generator
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            Doc Generator
           </button>
           <button class="nav-tab" onclick="switchTab('tab-precedents')">
-            ⚖️ Case Law & Precedents
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+            Case Law & Precedents
           </button>
           <button class="nav-tab" onclick="switchTab('tab-citations')">
-            📚 Laws & Statutes
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Laws & Statutes
           </button>
           <button class="nav-tab" onclick="switchTab('tab-qa')">
-            💬 Compliance Q&A
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Compliance Q&A
           </button>
         </nav>
 
@@ -286,7 +338,8 @@
           <!-- Missing Clause Alert Box -->
           <div class="missing-clause-banner" id="missingClauseBanner">
             <div class="missing-clause-header">
-              <span>⚠️ Missing Essential Clauses Detected:</span>
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span>Missing Essential Clauses Detected:</span>
             </div>
             <ul class="missing-clause-list">
               <li><strong>Force Majeure Clause:</strong> No provision for unforeseen disruptions or epidemics.</li>
@@ -312,7 +365,7 @@
         <div id="tab-negotiation" class="tab-view">
           <div class="filter-toolbar">
             <div style="font-size: 13px; font-weight: 700;">Select Clause to Compare Fix Wording:</div>
-            <select id="clauseNegotiateSelect" style="font-size: 12px; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);" onchange="renderNegotiationComparison()">
+            <select id="clauseNegotiateSelect" style="font-size: 12px; padding: 5px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" onchange="renderNegotiationComparison()">
               <option value="indemnity">Section 3.1: Liability & Indemnity</option>
               <option value="data_privacy">Section 4.1: Data Ownership & Monetization</option>
               <option value="dispute">Section 5.0: Arbitration & Legal Seat</option>
@@ -371,13 +424,16 @@
 
           <div class="gen-action-row">
             <button class="btn btn-primary" onclick="generateDocument()">
-              ✨ Generate Customized Legal Agreement
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Generate Customized Legal Agreement
             </button>
             <button class="btn btn-secondary" onclick="loadGeneratedToEditor()">
-              📋 Load to Contract Reader
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Load to Contract Reader
             </button>
             <button class="btn btn-secondary" onclick="copyGeneratedDoc()">
-              📋 Copy Agreement Text
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy Agreement Text
             </button>
           </div>
 
@@ -389,11 +445,14 @@
         <!-- TAB 4: Case Law & Landmark Precedents -->
         <div id="tab-precedents" class="tab-view">
           <div class="precedent-search-box">
-            <input type="text" id="caseSearchInput" placeholder="🔍 Search landmark case laws (e.g. damages, data privacy, frustration)..." onkeyup="searchCaseLaws()">
+            <input type="text" id="caseSearchInput" placeholder="Search landmark case laws (e.g. damages, data privacy, frustration)..." onkeyup="searchCaseLaws()">
           </div>
 
           <div class="dispute-arg-generator">
-            <h4>💡 AI Dispute Argument Generator</h4>
+            <h4>
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+              AI Dispute Argument Generator
+            </h4>
             <div style="display:flex; gap:8px;">
               <input type="text" id="disputeScenarioInput" placeholder="e.g. Counterparty claims vendor failure is excused by economic inflation...">
               <button class="btn btn-primary btn-sm" onclick="generateLegalArgument()">Generate Argument</button>
@@ -421,7 +480,7 @@
         <div id="tab-qa" class="tab-view">
           <div class="qa-domain-bar">
             <span style="font-size: 11.5px; font-weight:700; color:var(--text-muted);">Focus Domain:</span>
-            <select id="qaDomainSelect" style="font-size: 12px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-color);">
+            <select id="qaDomainSelect" style="font-size: 12px; padding: 3px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
               <option value="contract">Commercial Contract Law</option>
               <option value="corporate">Corporate & Business Licensing</option>
               <option value="labor">Labor & Employment Law</option>
@@ -439,8 +498,8 @@
               </div>
             </div>
             <div class="qa-input-bar">
-              <button class="btn btn-secondary btn-icon-only" id="voiceInputBtn" onclick="toggleSpeechRecognition()" title="Voice Input (Speech-to-Text)">
-                🎤
+              <button class="btn btn-secondary btn-icon-only" id="voiceInputBtn" onclick="toggleSpeechRecognition()" title="Voice Input (Speech-to-Text)" aria-label="Voice Input">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
               </button>
               <input type="text" id="qaInput" placeholder="Ask legal/compliance question..." onkeydown="handleQaKey(event)">
               <button class="btn btn-primary" onclick="sendQaQuestion()">Ask</button>
@@ -465,16 +524,20 @@
 
       <div class="report-actions-row">
         <a href="/api/export_report" target="_blank" class="btn btn-primary btn-lg" onclick="handleExportClick(event)">
-          📥 Download Full Text Report (.txt)
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Full Text Report (.txt)
         </a>
         <button class="btn btn-secondary btn-lg" onclick="printReport()">
-          🖨️ Print / Save as PDF
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print / Save as PDF
         </button>
         <button class="btn btn-secondary btn-lg" onclick="openBenchmarkModal()">
-          📈 View Accuracy Benchmarks
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          View Accuracy Benchmarks
         </button>
         <button class="btn btn-ghost btn-lg" onclick="goToStep(3)">
-          ← Return to Workspace
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Return to Workspace
         </button>
       </div>
     </div>
@@ -482,9 +545,11 @@
 
   <!-- ==================== INTELLIGENT FLOATING ACTION BUTTON (FAB) ==================== -->
   <div class="legal-fab-container">
-    <button class="legal-fab-btn" id="legalFabBtn" onclick="toggleFabChat()" title="Open LexiBot Compliance Advisor">
+    <button class="legal-fab-btn" id="legalFabBtn" onclick="toggleFabChat()" title="Open LexiBot Compliance Advisor" aria-label="Open LexiBot Compliance Advisor">
       <span class="fab-badge">AI</span>
-      <span class="fab-icon">⚖️</span>
+      <span class="fab-icon" aria-hidden="true">
+        <svg class="icon-svg-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+      </span>
       <span class="fab-pulse"></span>
     </button>
   </div>
@@ -493,13 +558,17 @@
   <div class="floating-chat-drawer" id="floatingChatDrawer">
     <div class="fab-chat-header">
       <div class="fab-chat-title">
-        <span class="fab-chat-avatar">⚖️</span>
+        <span class="fab-chat-avatar" aria-hidden="true">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+        </span>
         <div>
           <strong>LexiBot Intelligence Assistant</strong>
-          <span class="fab-status-text">● Multi-Domain Compliance Ready</span>
+          <span class="fab-status-text">Multi-Domain Compliance Ready</span>
         </div>
       </div>
-      <button class="fab-chat-close" onclick="toggleFabChat()">✕</button>
+      <button class="fab-chat-close" onclick="toggleFabChat()" title="Close chat" aria-label="Close chat">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
     <!-- Quick Prompt Pills -->
@@ -519,8 +588,8 @@
 
     <!-- Chat Input with Voice -->
     <div class="fab-chat-input-bar">
-      <button class="btn btn-sm btn-secondary" id="fabVoiceBtn" onclick="toggleFabSpeechRecognition()" title="Voice Dictation">
-        🎤
+      <button class="btn btn-sm btn-secondary btn-icon-only" id="fabVoiceBtn" onclick="toggleFabSpeechRecognition()" title="Voice Dictation" aria-label="Voice Dictation">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
       </button>
       <input type="text" id="fabChatInput" placeholder="Ask anything about legal compliance..." onkeydown="handleFabKey(event)">
       <button class="btn btn-sm btn-primary" onclick="sendFabMessage()">Send</button>
@@ -532,15 +601,20 @@
   <div class="modal-backdrop" id="apiKeyModal">
     <div class="modal-content">
       <div class="modal-title-row">
-        <h2>🔑 Gemini API Key Configuration</h2>
-        <button class="modal-close-btn" onclick="closeApiKeyModal()">✕</button>
+        <h2>
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          Gemini API Key Configuration
+        </h2>
+        <button class="modal-close-btn" onclick="closeApiKeyModal()" aria-label="Close modal">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
-      <div style="font-size: 13px; color: var(--text-secondary); margin: 12px 0; line-height: 1.5;">
+      <div style="font-size: 13px; color: var(--text-secondary); margin: 14px 0; line-height: 1.55;">
         <p>To enable live generative analysis directly through Google Gemini 2.5, paste your Google AI Studio API key below. It will be stored securely in your browser's local storage.</p>
-        <p style="margin-top: 6px; color: var(--text-muted); font-size: 12px;">Don't have a key? LexiShield AI's deterministic legal rule engine is active by default with zero errors!</p>
+        <p style="margin-top: 6px; color: var(--text-muted); font-size: 12px;">Don't have a key? LexiShield AI's deterministic legal rule engine is active by default with zero errors.</p>
       </div>
-      <div style="margin: 14px 0;">
-        <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." style="width:100%; padding:9px 12px; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-mono); font-size:13px;">
+      <div style="margin: 16px 0;">
+        <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." style="width:100%; padding:9px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:var(--font-mono); font-size:13px; outline:none;">
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <button class="btn btn-primary" onclick="saveApiKey()">Save API Key</button>
@@ -553,10 +627,15 @@
   <div class="modal-backdrop" id="benchmarkModal">
     <div class="modal-content">
       <div class="modal-title-row">
-        <h2>📈 Legal Accuracy & Benchmark Data</h2>
-        <button class="modal-close-btn" onclick="closeBenchmarkModal()">✕</button>
+        <h2>
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Legal Accuracy & Benchmark Data
+        </h2>
+        <button class="modal-close-btn" onclick="closeBenchmarkModal()" aria-label="Close modal">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
-      <p style="font-size: 13px; color: var(--text-muted); margin: 10px 0;">Empirical evaluation across 10 annotated commercial agreements (SaaS, Vendor MSA, DPA).</p>
+      <p style="font-size: 13px; color: var(--text-muted); margin: 12px 0;">Empirical evaluation across annotated commercial agreements (SaaS, Vendor MSA, DPA).</p>
 
       <div class="benchmark-grid">
         <div class="metric-card">
@@ -591,18 +670,23 @@
   <div class="modal-backdrop" id="methodologyModal">
     <div class="modal-content">
       <div class="modal-title-row">
-        <h2>⚖️ Risk Scoring Explanation</h2>
-        <button class="modal-close-btn" onclick="closeMethodologyModal()">✕</button>
+        <h2>
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+          Risk Scoring Explanation
+        </h2>
+        <button class="modal-close-btn" onclick="closeMethodologyModal()" aria-label="Close modal">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
       <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-top: 14px;">
-        <p>The overall risk rating ($0.0 - 10.0$) is calculated deterministically based on financial exposure and statutory non-compliance:</p>
-        <div style="background: var(--bg-surface-subtle); padding: 10px; border-radius: 6px; font-family: var(--font-mono); margin: 10px 0;">
-          Overall Score = min(10.0, ∑ Category_Weight * Severity)
+        <p>The overall risk rating (0.0 – 10.0) is calculated deterministically based on financial exposure and statutory non-compliance:</p>
+        <div style="background: var(--bg-surface-subtle); padding: 10px 14px; border-radius: var(--radius-sm); font-family: var(--font-mono); margin: 12px 0; border: 1px solid var(--border-color);">
+          Overall Score = min(10.0, ∑ Category_Weight × Severity)
         </div>
         <ul style="padding-left: 18px;">
-          <li><strong>High Potential Risk (8.0 - 10.0):</strong> Uncapped financial indemnity or regulatory violations.</li>
-          <li><strong>Medium Risk (5.0 - 7.9):</strong> Unfavorable dispute venues or tight payment penalties.</li>
-          <li><strong>Low Risk (0.0 - 4.9):</strong> Standard commercial boilerplate terms.</li>
+          <li><strong>High Potential Risk (8.0 – 10.0):</strong> Uncapped financial indemnity or regulatory violations.</li>
+          <li><strong>Medium Risk (5.0 – 7.9):</strong> Unfavorable dispute venues or tight payment penalties.</li>
+          <li><strong>Low Risk (0.0 – 4.9):</strong> Standard commercial boilerplate terms.</li>
         </ul>
       </div>
     </div>

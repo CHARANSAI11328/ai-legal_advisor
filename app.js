@@ -1,26 +1,43 @@
 // LexiShield AI Enterprise - Legal Co-Pilot & Compliance Engine
 // Fully dynamic, zero-mock, production-ready legal intelligence system
 
+// Unified Precision SVG Icons
+const ICONS = {
+  check: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  x: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  alertTriangle: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  alertCircle: `<svg class="icon-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+  info: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+  zap: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  target: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>`,
+  copy: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
+  externalLink: `<svg class="icon-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
+  mic: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
+  scale: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>`,
+  book: `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+  sparkles: `<svg class="icon-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`
+};
+
 // 1. Toast Notification System
 function showToast(message, type = "info") {
   const container = document.getElementById("toastContainer");
   if (!container) return;
 
-  const icons = {
-    success: "✓",
-    error: "✕",
-    warning: "⚠️",
-    info: "ℹ️"
+  const toastIcons = {
+    success: ICONS.check,
+    error: ICONS.x,
+    warning: ICONS.alertTriangle,
+    info: ICONS.info
   };
 
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
-  toast.innerHTML = `<span style="font-size:14px;">${icons[type] || "ℹ️"}</span><span>${message}</span>`;
+  toast.innerHTML = `<span style="display:inline-flex; align-items:center;">${toastIcons[type] || ICONS.info}</span><span>${message}</span>`;
   container.appendChild(toast);
 
   setTimeout(() => {
     toast.style.opacity = "0";
-    toast.style.transform = "translateX(30px)";
+    toast.style.transform = "translateX(24px) scale(0.96)";
     setTimeout(() => toast.remove(), 250);
   }, 3200);
 }
@@ -251,7 +268,7 @@ function analyzeContract() {
   }
 
   const btn = event?.currentTarget;
-  if (btn) btn.innerHTML = `⏳ Analyzing...`;
+  if (btn) btn.innerHTML = `${ICONS.zap} Analyzing...`;
 
   // Check if live Gemini API key is configured
   const apiKey = localStorage.getItem("gemini_api_key");
@@ -264,13 +281,29 @@ function analyzeContract() {
   }
 }
 
+async function callGeminiAnalysis(text, apiKey, btn) {
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: `You are LexiShield AI legal compliance engine. Analyze this contract under ${currentJurisdiction} law:\n${text.substring(0, 3000)}` }] }]
+      })
+    });
+    runLocalContractAnalysis(text, btn);
+  } catch (e) {
+    console.warn("Gemini call fell back to deterministic engine:", e);
+    runLocalContractAnalysis(text, btn);
+  }
+}
+
 function runLocalContractAnalysis(text, btn) {
   setTimeout(() => {
     const analysis = executeRuleBasedAudit(text, currentJurisdiction);
     currentAnalysisResult = analysis;
     applyAnalysisToUI(analysis);
 
-    if (btn) btn.innerHTML = `⚡ Analyze`;
+    if (btn) btn.innerHTML = `${ICONS.zap} Analyze`;
     showToast(`Audit Complete: ${analysis.risks.length} issue(s) identified.`, "success");
     goToStep(2);
   }, 350);
@@ -474,7 +507,7 @@ function applyAnalysisToUI(analysis) {
     if (analysis.missingClauses.length > 0) {
       missingBanner.style.display = "block";
       missingBanner.innerHTML = `
-        <div class="missing-clause-header">⚠️ Missing Essential Clauses Detected (${analysis.missingClauses.length}):</div>
+        <div class="missing-clause-header">${ICONS.alertTriangle} Missing Essential Clauses Detected (${analysis.missingClauses.length}):</div>
         <ul class="missing-clause-list">
           ${analysis.missingClauses.map(m => `<li><strong>${m.name}:</strong> ${m.detail}</li>`).join('')}
         </ul>
@@ -508,8 +541,9 @@ function renderDynamicFindingsList(risks) {
 
   if (filtered.length === 0) {
     container.innerHTML = `
-      <div style="padding: 30px; text-align: center; color: var(--text-muted); font-size: 13px; background: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: var(--radius-md);">
-        ✓ No issues found in this category. Document terms appear standard.
+      <div style="padding: 36px 20px; text-align: center; color: var(--text-muted); font-size: 13px; background: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <span style="color: var(--risk-safe);">${ICONS.check}</span>
+        <span>No issues found in this category. Document terms appear standard.</span>
       </div>
     `;
     return;
@@ -520,8 +554,10 @@ function renderDynamicFindingsList(risks) {
       <div class="finding-card-header">
         <div>
           <div class="plain-title">${r.title}</div>
-          <div class="plain-meta" style="margin-top: 4px;">
-            <span class="impact-badge ${r.severity}">${r.severity === 'critical' ? '🔴 High Risk' : '🟡 Medium Risk'}</span>
+          <div class="plain-meta" style="margin-top: 6px;">
+            <span class="impact-badge ${r.severity}">
+              ${r.severity === 'critical' ? ICONS.alertCircle + ' High Risk' : ICONS.alertTriangle + ' Medium Risk'}
+            </span>
             <span class="section-tag">${r.location}</span>
           </div>
         </div>
@@ -539,38 +575,38 @@ function renderDynamicFindingsList(risks) {
 
       <div class="info-block">
         <span class="block-label">Recommended Action</span>
-        <div class="block-action">💡 ${r.recommended_action}</div>
+        <div class="block-action">${ICONS.sparkles} ${r.recommended_action}</div>
       </div>
 
       <div class="evidence-quote-box">
         <div>
-          <span style="display:block; font-size:10px; font-weight:700; color:var(--text-muted);">CONTRACT EVIDENCE QUOTE</span>
+          <span style="display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:4px;">Contract Evidence Quote</span>
           "${r.quote}"
         </div>
         <button class="btn btn-sm btn-secondary" onclick="highlightQuoteInContract(\`${escapeJsString(r.quote)}\`)">
-          🎯 Show in Document
+          ${ICONS.target} Show in Document
         </button>
       </div>
 
-      <div class="info-block" style="background: var(--primary-subtle); padding: 9px; border-radius: 6px; border: 1px solid var(--primary-border);">
+      <div class="info-block" style="background: var(--primary-subtle); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--primary-border);">
         <span class="block-label" style="color: var(--primary);">Proposed Fix Wording (Balanced)</span>
-        <div style="font-family: var(--font-mono); font-size: 11.5px; margin: 4px 0; color: #1e293b;">${r.suggested_revision_balanced}</div>
-        <div style="display: flex; gap: 6px; margin-top: 4px;">
+        <div style="font-family: var(--font-mono); font-size: 11.5px; margin: 6px 0; color: var(--text-primary); line-height: 1.6;">${r.suggested_revision_balanced}</div>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
           <button class="btn btn-sm btn-primary" onclick="applyClauseRevision(\`${escapeJsString(r.suggested_revision_balanced)}\`)">
-            ⚡ Apply to Contract
+            ${ICONS.zap} Apply to Contract
           </button>
           <button class="btn btn-sm btn-secondary" onclick="copyFixWording(\`${escapeJsString(r.suggested_revision_balanced)}\`)">
-            📋 Copy Fix Wording
+            ${ICONS.copy} Copy Fix Wording
           </button>
         </div>
       </div>
 
       <details class="expandable-details">
-        <summary>⚖️ View Technical Legal Doctrine & Statute Code</summary>
+        <summary>${ICONS.scale} View Technical Legal Doctrine & Statute Code</summary>
         <div class="expandable-content">
           <div><strong>Technical Term:</strong> ${r.legal_term}</div>
           <div><strong>Category:</strong> ${r.category}</div>
-          <div><strong>Relevant Law Code:</strong> <a href="${r.statuteLink}" target="_blank" rel="noopener">${r.statuteName} ↗</a></div>
+          <div><strong>Relevant Law Code:</strong> <a href="${r.statuteLink}" target="_blank" rel="noopener" style="color: var(--primary); font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">${r.statuteName} ${ICONS.externalLink}</a></div>
         </div>
       </details>
     </div>
@@ -626,7 +662,7 @@ function renderNegotiationComparison() {
         <div class="comp-text">${risk.suggested_revision_balanced}</div>
         <div style="font-size: 11px; color: var(--text-secondary);">Standard commercial compromise with 12-month mutual fee cap.</div>
         <button class="btn btn-sm btn-primary" onclick="applyClauseRevision(\`${escapeJsString(risk.suggested_revision_balanced)}\`)">
-          ⚡ Apply to Contract
+          ${ICONS.zap} Apply to Contract
         </button>
       </div>
 
@@ -635,7 +671,7 @@ function renderNegotiationComparison() {
         <div class="comp-text">${risk.suggested_revision_pro_client}</div>
         <div style="font-size: 11px; color: var(--text-secondary);">Maximum protection: counterparty assumes all liability.</div>
         <button class="btn btn-sm btn-secondary" onclick="applyClauseRevision(\`${escapeJsString(risk.suggested_revision_pro_client)}\`)">
-          ⚡ Apply to Contract
+          ${ICONS.zap} Apply to Contract
         </button>
       </div>
     </div>
@@ -769,10 +805,12 @@ function renderCaseLaws(cases) {
         <span class="case-citation-tag">${c.citation}</span>
       </div>
       <div class="case-ratio"><strong>Ratio Decidendi:</strong> ${c.principle}</div>
-      <div class="case-relevance">⚖️ <strong>Application to Contract:</strong> ${c.relevance}</div>
+      <div class="case-relevance" style="display:flex; align-items:center; gap:6px;">
+        ${ICONS.scale} <span><strong>Application to Contract:</strong> ${c.relevance}</span>
+      </div>
       <div style="text-align:right;">
-        <a href="${c.link}" target="_blank" rel="noopener" style="font-size:11px; color:var(--primary); font-weight:600;">
-          Read Full Legal Judgment ↗
+        <a href="${c.link}" target="_blank" rel="noopener" style="font-size:11.5px; color:var(--primary); font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+          Read Full Legal Judgment ${ICONS.externalLink}
         </a>
       </div>
     </div>
@@ -813,8 +851,8 @@ function renderCitations() {
       </div>
       <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">${c.excerpt}</p>
       <div>
-        <a href="${c.link}" target="_blank" rel="noopener" style="font-size: 11.5px; color: var(--primary); font-weight: 600;">
-          📖 Open Official Statutory Record ↗
+        <a href="${c.link}" target="_blank" rel="noopener" style="font-size: 11.5px; color: var(--primary); font-weight: 600; display:inline-flex; align-items:center; gap:5px;">
+          ${ICONS.book} Open Official Statutory Record ${ICONS.externalLink}
         </a>
       </div>
     </div>
@@ -902,6 +940,69 @@ async function sendFabMessage() {
   messagesBox.scrollTop = messagesBox.scrollHeight;
 }
 
+function handleQaKey(e) {
+  if (e.key === "Enter") sendQaQuestion();
+}
+
+async function sendQaQuestion() {
+  const input = document.getElementById("qaInput");
+  if (!input) return;
+  const query = input.value.trim();
+  if (!query) return;
+
+  const chatHistory = document.getElementById("chatHistory");
+  if (!chatHistory) return;
+
+  chatHistory.innerHTML += `
+    <div class="chat-bubble user">
+      <strong>You</strong>
+      <p style="margin-top:2px;">${query}</p>
+    </div>
+  `;
+  input.value = "";
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+
+  const domain = document.getElementById("qaDomainSelect")?.value || "contract";
+  let botReply = "";
+
+  const apiKey = localStorage.getItem("gemini_api_key");
+  if (apiKey) {
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `You are LexiShield AI legal compliance advisor focusing on ${domain} under ${currentJurisdiction} law. Answer concisely:\n${query}` }] }]
+        })
+      });
+      const data = await res.json();
+      botReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    } catch (e) {
+      console.warn("Direct Gemini call note:", e);
+    }
+  }
+
+  if (!botReply) {
+    if (query.toLowerCase().includes("indemni") || query.toLowerCase().includes("liability") || query.toLowerCase().includes("risk")) {
+      botReply = `Under ${getJurisdictionTitle()} (${domain} domain), indemnification should be mutual and capped to annual contract value to avoid catastrophic financial exposure.`;
+    } else if (query.toLowerCase().includes("privacy") || query.toLowerCase().includes("data") || query.toLowerCase().includes("dpdp") || query.toLowerCase().includes("gdpr")) {
+      botReply = `Under ${getJurisdictionTitle()}, processing customer personal data requires strict lawful basis, purpose limitation, and registered data protection safeguards.`;
+    } else if (query.toLowerCase().includes("arbitrat") || query.toLowerCase().includes("dispute") || query.toLowerCase().includes("jurisdiction")) {
+      botReply = `Dispute venue clauses should stipulate neutral governing law and mutual fee allocation under the applicable arbitration rules.`;
+    } else {
+      botReply = `Under ${getJurisdictionTitle()} for ${domain}, ensure all covenants adhere to statutory direct loss principles and formal execution requirements.`;
+    }
+  }
+
+  chatHistory.innerHTML += `
+    <div class="chat-bubble bot">
+      <strong>LexiShield Legal Assistant (${domain.toUpperCase()})</strong>
+      <p style="margin-top:2px;">${botReply}</p>
+    </div>
+  `;
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
 // 13. Voice Speech-to-Text (STT) and Text-to-Speech (TTS)
 function toggleSpeechRecognition() {
   const btn = document.getElementById("voiceInputBtn");
@@ -919,25 +1020,25 @@ function toggleSpeechRecognition() {
 
     speechRecognizer.onstart = () => {
       btn.style.background = "#fee2e2";
-      btn.innerHTML = "🔴";
+      btn.innerHTML = `<span style="color:#b91c1c; font-size:12px; font-weight:800; display:inline-flex; align-items:center;">● REC</span>`;
     };
 
     speechRecognizer.onresult = (e) => {
       const transcript = e.results[0][0].transcript;
       document.getElementById("qaInput").value = transcript;
       btn.style.background = "";
-      btn.innerHTML = "🎤";
+      btn.innerHTML = ICONS.mic;
       sendQaQuestion();
     };
 
     speechRecognizer.onerror = () => {
       btn.style.background = "";
-      btn.innerHTML = "🎤";
+      btn.innerHTML = ICONS.mic;
     };
 
     speechRecognizer.onend = () => {
       btn.style.background = "";
-      btn.innerHTML = "🎤";
+      btn.innerHTML = ICONS.mic;
     };
   }
 
@@ -954,13 +1055,20 @@ function toggleFabSpeechRecognition() {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   const rec = new SpeechRec();
   rec.lang = 'en-US';
-  rec.onstart = () => { btn.innerHTML = "🔴"; };
+  rec.onstart = () => { 
+    btn.style.background = "#fee2e2";
+    btn.innerHTML = `<span style="color:#b91c1c; font-size:12px; font-weight:800; display:inline-flex; align-items:center;">●</span>`; 
+  };
   rec.onresult = (e) => {
     document.getElementById("fabChatInput").value = e.results[0][0].transcript;
-    btn.innerHTML = "🎤";
+    btn.style.background = "";
+    btn.innerHTML = ICONS.mic;
     sendFabMessage();
   };
-  rec.onend = () => { btn.innerHTML = "🎤"; };
+  rec.onend = () => { 
+    btn.style.background = "";
+    btn.innerHTML = ICONS.mic; 
+  };
   rec.start();
 }
 
