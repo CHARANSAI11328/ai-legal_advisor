@@ -1947,6 +1947,115 @@ body {
   border-color: var(--primary);
 }
 
+/* Typing Indicator & Bot Response Rich Formatting */
+.chat-bubble.typing {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.typing-dots .dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dots .dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots .dot:nth-child(2) { animation-delay: -0.16s; }
+.typing-dots .dot:nth-child(3) { animation-delay: 0s; }
+
+.typing-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.35; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.chat-bubble.bot.error-bubble {
+  background: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+  color: #991b1b !important;
+}
+
+.chat-bubble.bot.error-bubble strong {
+  color: #7f1d1d !important;
+}
+
+.chat-bubble.bot .bot-response-content {
+  font-size: 12.5px;
+  line-height: 1.6;
+  margin-top: 4px;
+  color: var(--text-primary);
+}
+
+.chat-bubble.bot .bot-response-content p {
+  margin: 6px 0;
+}
+
+.chat-bubble.bot .bot-response-content ul,
+.chat-bubble.bot .bot-response-content ol {
+  margin: 6px 0 6px 18px;
+  padding: 0;
+}
+
+.chat-bubble.bot .bot-response-content li {
+  margin-bottom: 4px;
+}
+
+.chat-bubble.bot .bot-response-content strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.chat-bubble.bot .bot-response-content code {
+  font-family: var(--font-mono);
+  background: var(--bg-surface-subtle);
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 11.5px;
+}
+
+.api-test-status {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1.4;
+  display: none;
+}
+.api-test-status.success {
+  display: block;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+.api-test-status.error {
+  display: block;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+.api-test-status.loading {
+  display: block;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
 /* ==========================================================================
    Modals
    ========================================================================== */

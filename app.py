@@ -1,6 +1,7 @@
 import os
 import time
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
+import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, Response
@@ -43,6 +44,20 @@ class ContractAnalysisResponse(BaseModel):
 class AnalysisRequest(BaseModel):
     contract_text: str
     jurisdiction: Optional[str] = "india"
+
+class ChatHistoryItem(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    message: str
+    contract_text: Optional[str] = ""
+    jurisdiction: Optional[str] = "india"
+    history: Optional[List[ChatHistoryItem]] = []
+    api_key: Optional[str] = None
+
+class TestKeyRequest(BaseModel):
+    api_key: str
 
 @app.post("/api/analyze", response_model=ContractAnalysisResponse)
 async def analyze_contract(req: AnalysisRequest):
@@ -121,6 +136,152 @@ async def analyze_contract(req: AnalysisRequest):
         detected_risks=sample_risks,
         processing_time_ms=elapsed_ms
     )
+
+@app.post("/api/chat")
+async def chat_endpoint(req: ChatRequest):
+    key = (req.api_key or "").strip() or os.environ.get("GEMINI_API_KEY", "").strip()
+    if not key:
+        return {
+            "success": False,
+            "error": "No API key configured. Please enter your Gemini API key in settings or provide GEMINI_API_KEY environment variable."
+        }
+    
+    # Handle OpenAI-compatible key if sk- prefix
+    if key.startswith("sk-"):
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                messages = [
+                    {
+                        "role": "system",
+                        "content": (
+                            f"You are LexiShield AI legal compliance advisor under {req.jurisdiction} jurisdiction.\n"
+                            f"Current loaded contract excerpt:\n\"\"\"{req.contract_text[:4000]}\"\"\"\n"
+                            "Answer user legal/compliance queries concisely, accurately, and in plain English without evasion or generic boilerplate."
+                        )
+                    }
+                ]
+                for item in (req.history or [])[-6:]:
+                    messages.append({
+                        "role": "assistant" if item.role == "model" else "user",
+                        "content": item.content
+                    })
+                messages.append({"role": "user", "content": req.message})
+
+                resp = await client.post(
+                    "https://api.openai.com/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                    json={"model": "gpt-4o-mini", "messages": messages, "temperature": 0.2}
+                )
+                data = resp.json()
+                if resp.status_code == 200:
+                    text = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                    return {"success": True, "reply": text, "model": "gpt-4o-mini"}
+                else:
+                    return {"success": False, "error": data.get("error", {}).get("message", f"OpenAI error {resp.status_code}")}
+        except Exception as e:
+            return {"success": False, "error": f"OpenAI call failed: {str(e)}"}
+
+    # Handle Google Gemini API
+    models_to_try = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+    last_error = ""
+
+    async with httpx.AsyncClient(timeout=35.0) as client:
+        for model_name in models_to_try:
+            try:
+                contents = []
+                for item in (req.history or [])[-6:]:
+                    contents.append({
+                        "role": "model" if item.role == "model" else "user",
+                        "parts": [{"text": item.content}]
+                    })
+
+                user_prompt = (
+                    f"[LOADED CONTRACT EXCERPT (first 4000 chars)]:\n\"\"\"\n{req.contract_text[:4000]}\n\"\"\"\n\n"
+                    f"Jurisdiction: {req.jurisdiction}\n\nUser Question:\n{req.message}"
+                ) if req.contract_text else f"Jurisdiction: {req.jurisdiction}\n\nUser Question:\n{req.message}"
+
+                contents.append({"role": "user", "parts": [{"text": user_prompt}]})
+
+                body = {
+                    "contents": contents,
+                    "systemInstruction": {
+                        "parts": [{
+                            "text": (
+                                f"You are LexiShield AI, an authoritative, plain-English legal contract and regulatory compliance advisor under {req.jurisdiction} law.\n"
+                                "Answer the user question directly, specifically, and accurately. "
+                                "If the query refers to the loaded contract, cite and analyze the specific terms. "
+                                "Never return generic canned non-answers or placeholder text."
+                            )
+                        }]
+                    },
+                    "generationConfig": {
+                        "temperature": 0.2,
+                        "maxOutputTokens": 1024
+                    }
+                }
+
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={key}"
+                resp = await client.post(url, json=body, headers={"Content-Type": "application/json"})
+                data = resp.json()
+
+                if resp.status_code == 200:
+                    candidates = data.get("candidates", [])
+                    if candidates:
+                        text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                        if text:
+                            return {"success": True, "reply": text, "model": model_name}
+
+                if resp.status_code == 404:
+                    last_error = data.get("error", {}).get("message", f"Model {model_name} not found")
+                    continue
+                else:
+                    err_msg = data.get("error", {}).get("message", f"HTTP {resp.status_code}")
+                    return {"success": False, "error": f"Gemini API Error: {err_msg}"}
+            except Exception as e:
+                last_error = str(e)
+
+    return {"success": False, "error": f"Gemini API request failed: {last_error}"}
+
+@app.post("/api/test_key")
+async def test_key_endpoint(req: TestKeyRequest):
+    key = req.api_key.strip()
+    if not key:
+        return {"valid": False, "error": "API key cannot be empty"}
+
+    if key.startswith("sk-"):
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.post(
+                    "https://api.openai.com/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                    json={"model": "gpt-4o-mini", "messages": [{"role": "user", "content": "Ping"}], "max_tokens": 5}
+                )
+                data = resp.json()
+                if resp.status_code == 200:
+                    return {"valid": True, "model": "gpt-4o-mini"}
+                return {"valid": False, "error": data.get("error", {}).get("message", f"HTTP {resp.status_code}")}
+        except Exception as e:
+            return {"valid": False, "error": str(e)}
+
+    # Test Google Gemini
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        for model_name in ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={key}"
+                resp = await client.post(
+                    url,
+                    headers={"Content-Type": "application/json"},
+                    json={"contents": [{"parts": [{"text": "Ping"}]}], "generationConfig": {"maxOutputTokens": 5}}
+                )
+                data = resp.json()
+                if resp.status_code == 200:
+                    return {"valid": True, "model": model_name}
+                if resp.status_code != 404:
+                    return {"valid": False, "error": data.get("error", {}).get("message", f"HTTP {resp.status_code}")}
+            except Exception as e:
+                return {"valid": False, "error": str(e)}
+
+    return {"valid": False, "error": "Unable to verify API key with Gemini models."}
 
 @app.get("/api/benchmark")
 async def get_benchmark():

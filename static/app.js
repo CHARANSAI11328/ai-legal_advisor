@@ -283,13 +283,19 @@ function analyzeContract() {
 
 async function callGeminiAnalysis(text, apiKey, btn) {
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: `You are LexiShield AI legal compliance engine. Analyze this contract under ${currentJurisdiction} law:\n${text.substring(0, 3000)}` }] }]
-      })
-    });
+    const models = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+    for (const model of models) {
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `You are LexiShield AI legal compliance engine. Analyze this contract under ${currentJurisdiction} law:\n${text.substring(0, 3000)}` }] }]
+          })
+        });
+        if (res.ok) break;
+      } catch (e) {}
+    }
     runLocalContractAnalysis(text, btn);
   } catch (e) {
     console.warn("Gemini call fell back to deterministic engine:", e);
@@ -860,6 +866,199 @@ function renderCitations() {
 }
 
 // 12. Floating Action Button (FAB) & LexiBot Assistant
+let fabChatHistory = [];
+let qaChatHistory = [];
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatBotResponse(rawText) {
+  if (!rawText) return "";
+  let escaped = escapeHtml(rawText);
+
+  // Bold **text**
+  escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Italic *text*
+  escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // Inline code `code`
+  escaped = escaped.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // Convert bullet lists and paragraphs
+  const lines = escaped.split("\n");
+  let formatted = "";
+  let inList = false;
+
+  for (let line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("- ") || trimmed.startsWith("* ") || /^\d+\.\s/.test(trimmed)) {
+      if (!inList) {
+        formatted += '<ul style="margin:6px 0 6px 18px; padding:0;">';
+        inList = true;
+      }
+      const itemText = trimmed.replace(/^[-*]\s+|\d+\.\s+/, '');
+      formatted += `<li style="margin-bottom:4px;">${itemText}</li>`;
+    } else {
+      if (inList) {
+        formatted += '</ul>';
+        inList = false;
+      }
+      if (trimmed) {
+        formatted += `<p style="margin:6px 0;">${trimmed}</p>`;
+      }
+    }
+  }
+  if (inList) formatted += '</ul>';
+
+  return formatted || escaped;
+}
+
+// Unified Live Generative AI Caller - Zero Hardcoded Fallbacks
+async function callAIEngine({ query, contractText, jurisdiction, history = [] }) {
+  const localKey = (localStorage.getItem("gemini_api_key") || "").trim();
+
+  // Case 1: Key configured in browser localStorage
+  if (localKey) {
+    // If user provided OpenAI-compatible sk- key
+    if (localKey.startsWith("sk-")) {
+      try {
+        const messages = [
+          {
+            role: "system",
+            content: `You are LexiShield AI legal compliance advisor under ${jurisdiction || "india"} law. Contract excerpt:\n"""${(contractText || "").slice(0, 4000)}"""\nAnswer accurately in plain English. Never give canned non-answers.`
+          }
+        ];
+        for (const h of history.slice(-6)) {
+          messages.append({ role: h.role === "model" ? "assistant" : "user", content: h.text });
+        }
+        messages.push({ role: "user", content: query });
+
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages,
+            temperature: 0.2
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          const text = data.choices?.[0]?.message?.content;
+          if (text) return { success: true, reply: text, model: "gpt-4o-mini" };
+        }
+        return { success: false, error: data.error?.message || `OpenAI API returned HTTP ${res.status}` };
+      } catch (err) {
+        return { success: false, error: `OpenAI connection failed: ${err.message}` };
+      }
+    }
+
+    // Google Gemini API: Try gemini-3.8-flash, fallback across active releases
+    const modelsToTry = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+    let lastError = "";
+
+    for (const model of modelsToTry) {
+      try {
+        const contents = [];
+        for (const h of history.slice(-6)) {
+          contents.push({
+            role: h.role === "model" ? "model" : "user",
+            parts: [{ text: h.text }]
+          });
+        }
+
+        const promptText = (contractText ? `[CURRENT ACTIVE CONTRACT EXCERPT (first 4000 chars)]:\n"""\n${contractText.slice(0, 4000)}\n"""\n\n` : "") +
+          `Jurisdiction: ${jurisdiction || "India"}\n\nUser Question:\n${query}`;
+
+        contents.push({
+          role: "user",
+          parts: [{ text: promptText }]
+        });
+
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${localKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents,
+            systemInstruction: {
+              parts: [{
+                text: `You are LexiShield AI, an authoritative, plain-English legal contract and regulatory compliance advisor under ${jurisdiction || "India"} law. 
+Answer what the user asks directly, concisely, and specifically. 
+If the question asks about risks, clauses, or obligations in the loaded contract, analyze the exact wording provided above.
+Never provide boilerplate evasion text or fake replies.`
+              }]
+            },
+            generationConfig: {
+              temperature: 0.2,
+              maxOutputTokens: 1024
+            }
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (reply) {
+            return { success: true, reply, model };
+          }
+        }
+
+        if (res.status === 404) {
+          lastError = data.error?.message || `Model ${model} not available`;
+          continue; // try next model
+        } else {
+          const errMsg = data.error?.message || `HTTP ${res.status}`;
+          return { success: false, error: `Gemini API Error: ${errMsg}` };
+        }
+      } catch (err) {
+        lastError = err.message;
+      }
+    }
+    return { success: false, error: `Gemini API call failed: ${lastError}` };
+  }
+
+  // Case 2: No key in browser localStorage -> Query backend /api/chat
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: query,
+        contract_text: contractText,
+        jurisdiction: jurisdiction,
+        history: history.map(h => ({ role: h.role, content: h.text }))
+      })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.reply) {
+        return { success: true, reply: data.reply, model: data.model || "gemini-api" };
+      }
+      if (data.error) {
+        return { success: false, error: data.error };
+      }
+    }
+  } catch (err) {
+    // Backend endpoint not reachable (static file server)
+  }
+
+  // Case 3: No API key configured
+  return {
+    success: false,
+    error: "Gemini API key is required to query the AI model. Please click 'Configure API Key' below to enter your key."
+  };
+}
+
 function toggleFabChat() {
   const drawer = document.getElementById("floatingChatDrawer");
   drawer.classList.toggle("active");
@@ -869,7 +1068,9 @@ function toggleFabChat() {
 }
 
 function sendQuickPrompt(promptText) {
-  document.getElementById("fabChatInput").value = promptText;
+  const input = document.getElementById("fabChatInput");
+  if (!input) return;
+  input.value = promptText;
   sendFabMessage();
 }
 
@@ -879,6 +1080,7 @@ function handleFabKey(e) {
 
 async function sendFabMessage() {
   const input = document.getElementById("fabChatInput");
+  const sendBtn = document.getElementById("fabSendBtn");
   const query = input.value.trim();
   if (!query) return;
 
@@ -886,57 +1088,67 @@ async function sendFabMessage() {
   messagesBox.innerHTML += `
     <div class="chat-bubble user">
       <strong>You</strong>
-      <p style="margin-top:2px;">${query}</p>
+      <p style="margin-top:2px;">${escapeHtml(query)}</p>
     </div>
   `;
   input.value = "";
-  messagesBox.scrollTop = messagesBox.scrollHeight;
+  input.disabled = true;
+  if (sendBtn) sendBtn.disabled = true;
 
-  const currentContractText = document.getElementById("contractText").value;
-  let botReply = "";
-
-  // Check if live Gemini API key is configured
-  const apiKey = localStorage.getItem("gemini_api_key");
-  if (apiKey) {
-    try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `You are LexiShield AI legal compliance assistant under ${currentJurisdiction} jurisdiction. Current contract excerpt:\n"""${currentContractText.substring(0, 1000)}"""\nAnswer the user query concisely in plain English:\n${query}` }] }]
-        })
-      });
-      const data = await res.json();
-      botReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    } catch (e) {
-      console.log("Direct Gemini call note:", e);
-    }
-  }
-
-  if (!botReply) {
-    // Dynamic context-aware response based on active contract
-    if (query.toLowerCase().includes("financial") || query.toLowerCase().includes("indemnity") || query.toLowerCase().includes("risk")) {
-      botReply = currentContractText.includes("indemnif") 
-        ? "The primary financial exposure in your loaded contract is the unilateral indemnification clause. Section 73 of the Indian Contract Act limits damages to direct natural losses, so an uncapped clause is hazardous."
-        : "No severe financial indemnity clauses were detected in the current text.";
-    } else if (query.toLowerCase().includes("dpdp") || query.toLowerCase().includes("privacy") || query.toLowerCase().includes("data")) {
-      botReply = "Under India DPDP Act 2023 Section 6 and GDPR Article 28, vendors cannot monetize or share customer data without explicit purpose-bound consent.";
-    } else if (query.toLowerCase().includes("missing")) {
-      const struct = currentAnalysisResult;
-      botReply = struct && struct.missingClauses.length > 0
-        ? `The contract currently lacks: ${struct.missingClauses.map(m => m.name).join(', ')}.`
-        : "The agreement contains standard commercial provisions.";
-    } else {
-      botReply = `Under ${getJurisdictionTitle()}, commercial terms must reflect statutory proportionality. Asymmetric clauses may be vulnerable to judicial review.`;
-    }
-  }
-
+  // Add animated typing indicator
+  const typingId = "fabTyping_" + Date.now();
   messagesBox.innerHTML += `
-    <div class="chat-bubble bot">
-      <strong>LexiBot Assistant</strong>
-      <p style="margin-top:2px;">${botReply}</p>
+    <div class="chat-bubble bot typing" id="${typingId}">
+      <strong>LexiBot Intelligence Assistant</strong>
+      <div class="typing-dots">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="typing-label">Querying Gemini API...</span>
+      </div>
     </div>
   `;
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+
+  const currentContractText = document.getElementById("contractText") ? document.getElementById("contractText").value : "";
+
+  const result = await callAIEngine({
+    query,
+    contractText: currentContractText,
+    jurisdiction: currentJurisdiction,
+    history: fabChatHistory
+  });
+
+  // Remove typing indicator
+  const typingElem = document.getElementById(typingId);
+  if (typingElem) typingElem.remove();
+
+  input.disabled = false;
+  if (sendBtn) sendBtn.disabled = false;
+  input.focus();
+
+  if (result.success && result.reply) {
+    fabChatHistory.push({ role: "user", text: query });
+    fabChatHistory.push({ role: "model", text: result.reply });
+    if (fabChatHistory.length > 12) fabChatHistory = fabChatHistory.slice(-12);
+
+    messagesBox.innerHTML += `
+      <div class="chat-bubble bot">
+        <strong>LexiBot Intelligence Assistant</strong>
+        <div class="bot-response-content">${formatBotResponse(result.reply)}</div>
+      </div>
+    `;
+  } else {
+    messagesBox.innerHTML += `
+      <div class="chat-bubble bot error-bubble">
+        <strong>LexiBot Intelligence Assistant</strong>
+        <p style="margin-top:4px; font-size:12.5px; line-height:1.45;">⚠️ ${escapeHtml(result.error || "Failed to generate response from API.")}</p>
+        <div style="margin-top:8px;">
+          <button class="btn btn-sm btn-primary" onclick="openApiKeyModal()">
+            ⚙️ Configure API Key
+          </button>
+        </div>
+      </div>
+    `;
+  }
   messagesBox.scrollTop = messagesBox.scrollHeight;
 }
 
@@ -956,50 +1168,65 @@ async function sendQaQuestion() {
   chatHistory.innerHTML += `
     <div class="chat-bubble user">
       <strong>You</strong>
-      <p style="margin-top:2px;">${query}</p>
+      <p style="margin-top:2px;">${escapeHtml(query)}</p>
     </div>
   `;
   input.value = "";
-  chatHistory.scrollTop = chatHistory.scrollHeight;
+  input.disabled = true;
 
   const domain = document.getElementById("qaDomainSelect")?.value || "contract";
-  let botReply = "";
-
-  const apiKey = localStorage.getItem("gemini_api_key");
-  if (apiKey) {
-    try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `You are LexiShield AI legal compliance advisor focusing on ${domain} under ${currentJurisdiction} law. Answer concisely:\n${query}` }] }]
-        })
-      });
-      const data = await res.json();
-      botReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    } catch (e) {
-      console.warn("Direct Gemini call note:", e);
-    }
-  }
-
-  if (!botReply) {
-    if (query.toLowerCase().includes("indemni") || query.toLowerCase().includes("liability") || query.toLowerCase().includes("risk")) {
-      botReply = `Under ${getJurisdictionTitle()} (${domain} domain), indemnification should be mutual and capped to annual contract value to avoid catastrophic financial exposure.`;
-    } else if (query.toLowerCase().includes("privacy") || query.toLowerCase().includes("data") || query.toLowerCase().includes("dpdp") || query.toLowerCase().includes("gdpr")) {
-      botReply = `Under ${getJurisdictionTitle()}, processing customer personal data requires strict lawful basis, purpose limitation, and registered data protection safeguards.`;
-    } else if (query.toLowerCase().includes("arbitrat") || query.toLowerCase().includes("dispute") || query.toLowerCase().includes("jurisdiction")) {
-      botReply = `Dispute venue clauses should stipulate neutral governing law and mutual fee allocation under the applicable arbitration rules.`;
-    } else {
-      botReply = `Under ${getJurisdictionTitle()} for ${domain}, ensure all covenants adhere to statutory direct loss principles and formal execution requirements.`;
-    }
-  }
+  const typingId = "qaTyping_" + Date.now();
 
   chatHistory.innerHTML += `
-    <div class="chat-bubble bot">
+    <div class="chat-bubble bot typing" id="${typingId}">
       <strong>LexiShield Legal Assistant (${domain.toUpperCase()})</strong>
-      <p style="margin-top:2px;">${botReply}</p>
+      <div class="typing-dots">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="typing-label">Querying Gemini API...</span>
+      </div>
     </div>
   `;
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+
+  const currentContractText = document.getElementById("contractText") ? document.getElementById("contractText").value : "";
+  const domainPrompt = `[Legal Domain Focus: ${domain}]\n${query}`;
+
+  const result = await callAIEngine({
+    query: domainPrompt,
+    contractText: currentContractText,
+    jurisdiction: currentJurisdiction,
+    history: qaChatHistory
+  });
+
+  const typingElem = document.getElementById(typingId);
+  if (typingElem) typingElem.remove();
+  input.disabled = false;
+  input.focus();
+
+  if (result.success && result.reply) {
+    qaChatHistory.push({ role: "user", text: query });
+    qaChatHistory.push({ role: "model", text: result.reply });
+    if (qaChatHistory.length > 12) qaChatHistory = qaChatHistory.slice(-12);
+
+    chatHistory.innerHTML += `
+      <div class="chat-bubble bot">
+        <strong>LexiShield Legal Assistant (${domain.toUpperCase()})</strong>
+        <div class="bot-response-content">${formatBotResponse(result.reply)}</div>
+      </div>
+    `;
+  } else {
+    chatHistory.innerHTML += `
+      <div class="chat-bubble bot error-bubble">
+        <strong>LexiShield Legal Assistant (${domain.toUpperCase()})</strong>
+        <p style="margin-top:4px; font-size:12.5px; line-height:1.45;">⚠️ ${escapeHtml(result.error || "Failed to generate response from API.")}</p>
+        <div style="margin-top:8px;">
+          <button class="btn btn-sm btn-primary" onclick="openApiKeyModal()">
+            ⚙️ Configure API Key
+          </button>
+        </div>
+      </div>
+    `;
+  }
   chatHistory.scrollTop = chatHistory.scrollHeight;
 }
 
@@ -1372,7 +1599,13 @@ function printReport() {
 
 // 18. Modals & Settings
 function openApiKeyModal() {
-  document.getElementById("geminiApiKeyInput").value = localStorage.getItem("gemini_api_key") || "";
+  const input = document.getElementById("geminiApiKeyInput");
+  if (input) input.value = localStorage.getItem("gemini_api_key") || "";
+  const statusDiv = document.getElementById("apiKeyTestStatus");
+  if (statusDiv) {
+    statusDiv.style.display = "none";
+    statusDiv.innerText = "";
+  }
   document.getElementById("apiKeyModal").classList.add("active");
 }
 
@@ -1380,11 +1613,111 @@ function closeApiKeyModal() {
   document.getElementById("apiKeyModal").classList.remove("active");
 }
 
+function toggleApiKeyVisibility() {
+  const input = document.getElementById("geminiApiKeyInput");
+  const btn = document.getElementById("toggleKeyVisibilityBtn");
+  if (!input) return;
+  if (input.type === "password") {
+    input.type = "text";
+    if (btn) btn.innerText = "Hide";
+  } else {
+    input.type = "password";
+    if (btn) btn.innerText = "Show";
+  }
+}
+
+async function testApiKeyConnection() {
+  const statusElem = document.getElementById("apiKeyTestStatus");
+  const input = document.getElementById("geminiApiKeyInput");
+  const key = input ? input.value.trim() : "";
+
+  if (!key) {
+    if (statusElem) {
+      statusElem.className = "api-test-status error";
+      statusElem.innerText = "Please enter an API key above to test.";
+    }
+    return;
+  }
+
+  if (statusElem) {
+    statusElem.className = "api-test-status loading";
+    statusElem.innerText = "Testing API connection with AI model...";
+  }
+
+  // If OpenAI format
+  if (key.startsWith("sk-")) {
+    try {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${key}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content: "Ping" }],
+          max_tokens: 5
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        statusElem.className = "api-test-status success";
+        statusElem.innerText = "✅ OpenAI connection successful! Model gpt-4o-mini is responsive.";
+      } else {
+        statusElem.className = "api-test-status error";
+        statusElem.innerText = `❌ OpenAI Error: ${data.error?.message || "HTTP " + res.status}`;
+      }
+    } catch (e) {
+      statusElem.className = "api-test-status error";
+      statusElem.innerText = `❌ Network Error: ${e.message}`;
+    }
+    return;
+  }
+
+  // Google Gemini API Test
+  const models = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+  let successModel = null;
+  let errorMsg = "";
+
+  for (const model of models) {
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: "Ping" }] }],
+          generationConfig: { maxOutputTokens: 5 }
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        successModel = model;
+        break;
+      } else {
+        if (res.status !== 404) {
+          errorMsg = data.error?.message || `HTTP ${res.status}`;
+          break;
+        }
+      }
+    } catch (e) {
+      errorMsg = e.message;
+    }
+  }
+
+  if (successModel) {
+    statusElem.className = "api-test-status success";
+    statusElem.innerText = `✅ Gemini API connected successfully! Active model: ${successModel}`;
+  } else {
+    statusElem.className = "api-test-status error";
+    statusElem.innerText = `❌ Google Gemini Error: ${errorMsg || "Unable to connect. Please verify your key."}`;
+  }
+}
+
 function saveApiKey() {
   const key = document.getElementById("geminiApiKeyInput").value.trim();
   if (key) {
     localStorage.setItem("gemini_api_key", key);
-    showToast("Gemini API key saved securely in browser storage!", "success");
+    showToast("API key saved! Chatbot will query your API directly.", "success");
   } else {
     localStorage.removeItem("gemini_api_key");
   }
@@ -1395,8 +1728,13 @@ function saveApiKey() {
 function clearApiKey() {
   localStorage.removeItem("gemini_api_key");
   document.getElementById("geminiApiKeyInput").value = "";
+  const statusDiv = document.getElementById("apiKeyTestStatus");
+  if (statusDiv) {
+    statusDiv.style.display = "none";
+    statusDiv.innerText = "";
+  }
   updateApiKeyStatus();
-  showToast("API key cleared. Deterministic legal rule engine active.", "info");
+  showToast("Saved API key removed.", "info");
   closeApiKeyModal();
 }
 
@@ -1405,6 +1743,11 @@ function updateApiKeyStatus() {
   if (dot) {
     const hasKey = !!localStorage.getItem("gemini_api_key");
     dot.classList.toggle("active", hasKey);
+  }
+  const statusText = document.getElementById("fabStatusText");
+  if (statusText) {
+    const hasKey = !!localStorage.getItem("gemini_api_key");
+    statusText.innerText = hasKey ? "Live Gemini API Active" : "Multi-Domain Compliance Ready";
   }
 }
 

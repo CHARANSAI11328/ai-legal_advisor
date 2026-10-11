@@ -563,12 +563,17 @@
         </span>
         <div>
           <strong>LexiBot Intelligence Assistant</strong>
-          <span class="fab-status-text">Multi-Domain Compliance Ready</span>
+          <span class="fab-status-text" id="fabStatusText">Live AI Legal Co-Pilot</span>
         </div>
       </div>
-      <button class="fab-chat-close" onclick="toggleFabChat()" title="Close chat" aria-label="Close chat">
-        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button class="fab-chat-close" onclick="openApiKeyModal()" title="Configure AI API Key" aria-label="API Settings">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        </button>
+        <button class="fab-chat-close" onclick="toggleFabChat()" title="Close chat" aria-label="Close chat">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
     </div>
 
     <!-- Quick Prompt Pills -->
@@ -581,8 +586,8 @@
     <!-- Chat Messages Container -->
     <div class="fab-chat-messages" id="fabChatMessages">
       <div class="chat-bubble bot">
-        <strong>LexiBot Compliance Assistant</strong>
-        <p style="margin-top: 3px;">Hello! I can explain your contract, verify compliance across India, GDPR, or UAE frameworks, or help draft missing protective terms. How can I assist?</p>
+        <strong>LexiBot Intelligence Assistant</strong>
+        <p style="margin-top: 3px;">Hello! I am your live AI legal assistant powered by the Generative API. Ask me anything about your contract, compliance liabilities, or negotiation revisions.</p>
       </div>
     </div>
 
@@ -592,7 +597,7 @@
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
       </button>
       <input type="text" id="fabChatInput" placeholder="Ask anything about legal compliance..." onkeydown="handleFabKey(event)">
-      <button class="btn btn-sm btn-primary" onclick="sendFabMessage()">Send</button>
+      <button class="btn btn-sm btn-primary" id="fabSendBtn" onclick="sendFabMessage()">Send</button>
     </div>
   </div>
 
@@ -603,21 +608,31 @@
       <div class="modal-title-row">
         <h2>
           <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-          Gemini API Key Configuration
+          AI API Configuration
         </h2>
         <button class="modal-close-btn" onclick="closeApiKeyModal()" aria-label="Close modal">
           <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div style="font-size: 13px; color: var(--text-secondary); margin: 14px 0; line-height: 1.55;">
-        <p>To enable live generative analysis directly through Google Gemini 2.5, paste your Google AI Studio API key below. It will be stored securely in your browser's local storage.</p>
-        <p style="margin-top: 6px; color: var(--text-muted); font-size: 12px;">Don't have a key? LexiShield AI's deterministic legal rule engine is active by default with zero errors.</p>
+        <p>Provide your <strong>Google Gemini API key</strong> to power live answers in the floating legal chatbot and real-time generative analysis. Every reply is generated dynamically through the API.</p>
+        <p style="margin-top: 6px; color: var(--text-muted); font-size: 12px;">
+          Need a free key? Generate one at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:var(--primary); font-weight:600; text-decoration:underline;">Google AI Studio</a>. (OpenAI-compatible keys starting with <code>sk-</code> are also supported).
+        </p>
       </div>
       <div style="margin: 16px 0;">
-        <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." style="width:100%; padding:9px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:var(--font-mono); font-size:13px; outline:none;">
+        <label style="display:block; font-size:12px; font-weight:600; margin-bottom:6px; color:var(--text-secondary);">Enter API Key:</label>
+        <div style="display:flex; gap:6px;">
+          <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy... or sk-..." style="flex:1; padding:9px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:var(--font-mono); font-size:13px; outline:none;">
+          <button class="btn btn-secondary" type="button" id="toggleKeyVisibilityBtn" onclick="toggleApiKeyVisibility()" style="min-width:65px;">Show</button>
+        </div>
+        <div id="apiKeyTestStatus" class="api-test-status"></div>
       </div>
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <button class="btn btn-primary" onclick="saveApiKey()">Save API Key</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" onclick="saveApiKey()">Save API Key</button>
+          <button class="btn btn-secondary" onclick="testApiKeyConnection()">Test Connection</button>
+        </div>
         <button class="btn btn-ghost" onclick="clearApiKey()">Clear Saved Key</button>
       </div>
     </div>
